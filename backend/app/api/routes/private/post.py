@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends, Body
+from starlette import status
 
 from boto3 import Session
 
@@ -9,43 +10,40 @@ from app.cdn.repositories.private.private import PrivateYandexCDNRepository
 from app.api.dependencies.database import get_db_repository
 from app.api.dependencies.cdn import get_cdn_repository
 
+# Request models
 from app.models.private import PresentationCreateModel, PresentationMediaCreate
+
+# Response models
+from app.models.private import PresentationInDB
+
 
 from app.db.repositories.private.queries import insert_grades_query
 router = APIRouter()
 
-@router.post("/practice", )
+@router.post("/practice", response_model=PresentationInDB, name="private:post-practice", status_code=status.HTTP_201_CREATED)
 async def create_private_practice(
     presentation: PresentationCreateModel = Body(...),
     db_repo: PrivateDBRepository = Depends(get_db_repository(PrivateDBRepository)),
     cdn_repo: PrivateYandexCDNRepository = Depends(get_cdn_repository(PrivateYandexCDNRepository))
-    ) -> None:
-    
-    # get all keys for a given prefix
-    keys = cdn_repo.get_object_keys(prefix=presentation.key)
-    img_prefix = presentation.key + ('/img' if presentation.key[-1] != '/' else 'img')
-    mp3_prefix = presentation.key + ('/mp3' if presentation.key[-1] != '/' else 'mp3')
+    ) -> PresentationInDB:
 
-    image_key_order = cdn_repo.get_key_order_pairs(prefix=img_prefix)
-    audio_key_order = cdn_repo.get_key_order_pairs(prefix=mp3_prefix)
+    # get images and audio formed data    
+    (images, audio) = cdn_repo.form_presentation_insert_data(prefix=presentation.key, fk=presentation.fk)
+    # insert into database
+    response = await db_repo.insert_practice(presentation=presentation, images=images, audio=audio)
 
-    image = cdn_repo.get_sharing_links_from_keys(prefix=img_prefix)
-    audio = cdn_repo.get_sharing_links_from_keys(prefix=mp3_prefix)
+    return response
 
-    images = []
-    for key, value in image.items():
-        try:
-            images.append(PresentationMediaCreate(order=image_key_order[key], url=value, fk=presentation.fk))
-        except: 
-            pass
+@router.post("/theory", response_model=PresentationInDB, name="private:post-theory", status_code=status.HTTP_201_CREATED)
+async def create_private_practice(
+    presentation: PresentationCreateModel = Body(...),
+    db_repo: PrivateDBRepository = Depends(get_db_repository(PrivateDBRepository)),
+    cdn_repo: PrivateYandexCDNRepository = Depends(get_cdn_repository(PrivateYandexCDNRepository))
+    ) -> PresentationInDB:
 
-    audios = []
-    for key, value in audio.items():
-        try:
-            audios.append(PresentationMediaCreate(order=audio_key_order[key], url=value, fk=presentation.fk))
-        except:
-            pass
-
-    response = await db_repo.insert_theory(presentation=presentation, images=images, audio=audios)
+    # get images and audio formed data    
+    (images, audio) = cdn_repo.form_presentation_insert_data(prefix=presentation.key, fk=presentation.fk)
+    # insert into database
+    response = await db_repo.insert_theory(presentation=presentation, images=images, audio=audio)
 
     return response

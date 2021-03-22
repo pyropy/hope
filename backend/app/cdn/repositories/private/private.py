@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from app.cdn.repositories.base import BaseCDNRepository
 from app.core.config import BUCKET, CDN_LINK_LIFESPAN
 
@@ -127,3 +127,44 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         Returns filtered by prefix
         '''
         return filter_prefix(prefix=prefix, content_list=self.__KEYS if not list_of_keys else list_of_keys)
+
+    def form_presentation_insert_data(self, *, prefix, fk, image_prefix="img", audio_prefix="mp3") -> Tuple:
+        '''
+        Accepts prefix, image_prefix, audio_prefix
+
+            prefix - key to folder containing audio and image folders
+            image_prefix - image folder name
+            audio_prefix - audio folder name
+
+        Returns 
+            Tuple of formed data for inserting
+            images = List[PresentationMediaCreate]
+            audio = List[PresentationMediaCreate]
+        '''
+        # get all keys for a given prefix
+        self.get_object_keys(prefix=prefix)
+
+        image_prefix = prefix + '/' + image_prefix if prefix[-1] != '/' else image_prefix
+        audio_prefix = prefix + '/' + audio_prefix if prefix[-1] != '/' else audio_prefix
+
+        image_key_order = self.get_key_order_pairs(prefix=image_prefix)
+        audio_key_order = self.get_key_order_pairs(prefix=audio_prefix)
+
+        image = self.get_sharing_links_from_keys(prefix=image_prefix)
+        audio = self.get_sharing_links_from_keys(prefix=audio_prefix)
+
+        images = []
+        for key, value in image.items():
+            try:
+                images.append(PresentationMediaCreate(order=image_key_order[key], url=value, fk=fk))
+            except:
+                pass
+
+        audios = []
+        for key, value in audio.items():
+            try:
+                audios.append(PresentationMediaCreate(order=audio_key_order[key], url=value, fk=fk))
+            except:
+                pass
+
+        return (images, audios)
