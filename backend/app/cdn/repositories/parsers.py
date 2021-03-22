@@ -93,6 +93,13 @@ def filter_prefix(prefix, content_list, exclude_root=True) -> List:
             prefix - prefix to filter by
             content_list - list to filter
             exclude_root: True - exclude root directory
+
+    Returns list of Dict:
+        [
+            {
+                'Key' : 'object_key_in_cdn'
+            }
+        ]
     '''
     filtered = []
     prefix = prefix if prefix[-1] == '/' else prefix + '/'
@@ -102,5 +109,38 @@ def filter_prefix(prefix, content_list, exclude_root=True) -> List:
                 filtered.append(content)
             elif prefix != content['Key']:
                 filtered.append(content)
+
+    return filtered
+
+
+def list_root_directory_files(prefix, content_list, exclude_root=True, exclude_files=[]) -> List:
+    '''
+    Return only files from directory
+
+        :params:
+            prefix - directory prefix to filter
+            content_list - list to filter
+            exclude_root: True - exclude directory itself
+            exclude_files: List of filed to be excluded by key
+    Returns list of Dict:
+        [
+            {
+                'Key' : 'object_key_in_cdn'
+            }
+        ]
+    '''
+    filtered = []
+    prefix = prefix if prefix[-1] == '/' else prefix + '/'
+    
+    for content in content_list:
+        if prefix in content['Key'] and prefix != content['Key']:
+            if '/' not in content['Key'].split(prefix)[1]:
+                if content['Key'] not in exclude_files:
+                    filtered.append(content)
+                elif not exclude_files:
+                    filtered.append(content)
+
+    if not exclude_root:
+        filtered.append({"Key": prefix})
 
     return filtered
