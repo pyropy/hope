@@ -144,3 +144,13 @@ def list_root_directory_files(prefix, content_list, exclude_root=True, exclude_f
         filtered.append({"Key": prefix})
 
     return filtered
+
+
+def check_key_exists_in_list_of_objects(key, list_of_objects) -> bool:
+
+        for object_key in list_of_objects:
+            if key == object_key['Key']:
+                return True
+
+        print(f"Didn't find key {key} in \n {list_of_objects}")        
+        return False

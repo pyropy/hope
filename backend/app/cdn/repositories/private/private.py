@@ -95,7 +95,7 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
 
         return order_nums
 
-    def get_sharing_links_from_keys(self, *, prefix=None, list_of_objects=[]) -> Dict:
+    def get_sharing_links_from_keys(self, *, prefix=None, list_of_objects=[], check_key=False) -> Dict:
         '''
         Accept List of Dict with key = Key and value = object key
 
@@ -106,7 +106,6 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         '''
         response = self.get_key_name_pairs(prefix=prefix)
 
-
         if not list_of_objects:
             if prefix:
                 list_of_objects = filter_prefix(prefix=prefix, content_list=self.__KEYS)
@@ -114,7 +113,11 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
                 list_of_objects = self.__KEYS
 
         for element in list_of_objects:
-            response[element['Key']] = self.client.generate_presigned_url('get_object', Params={'Bucket': BUCKET, 'Key': element['Key']}, ExpiresIn=CDN_LINK_LIFESPAN)
+            if check_key: 
+                if check_key_exists_in_list_of_objects(element['Key'], list_of_objects=self.__KEYS):
+                    response[element['Key']] = self.client.generate_presigned_url('get_object', Params={'Bucket': BUCKET, 'Key': element['Key']}, ExpiresIn=CDN_LINK_LIFESPAN)
+            else:
+                response[element['Key']] = self.client.generate_presigned_url('get_object', Params={'Bucket': BUCKET, 'Key': element['Key']}, ExpiresIn=CDN_LINK_LIFESPAN)
 
         return response
 
@@ -231,18 +234,28 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         return (material_key, material_url)
 
     def get_background_url(self, *, key, remove_extra=False) -> str:
+        '''
+        Accepts key to object of type (suported_formats)
+
+        remove_extra: False | True -> If set to true, this will remove all files from a folder
+        that do not equal to key parameter. NOTE: If u set remove_extra to True and you indicate wrong key
+        this will remove the wanted key from folder
+        '''
         suported_formats = ['jpg']
         if key.split('/')[-1].split('.')[-1] not in suported_formats:
             raise HTTPException(status_code=400, detail=f"Please specify key to file with one of the suported formats '{' ,'.join(suported_formats)}'")
 
         folder_prefix = key.replace(key.split('/')[-1], '')
-        print(folder_prefix)
 
         if remove_extra: 
             content_list = self.get_object_keys(prefix=key.split('/')[0], update=True)
             to_be_removed = list_root_directory_files(prefix=folder_prefix, content_list=content_list, exclude_files=[key])
             self.delete_keys(list_of_keys=to_be_removed)        
 
-        link = self.get_sharing_links_from_keys(list_of_objects=[{"Key": key}])
+        link = self.get_sharing_links_from_keys(list_of_objects=[{"Key": key}], check_key=True)
 
-        return link[key]
+        try:
+            return link[key]
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Background key error. Check your post data, and cdn! We didn't find any data in cdn for a given key")
+

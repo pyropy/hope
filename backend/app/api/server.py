@@ -25,13 +25,11 @@ def get_application():
     app.add_event_handler("startup", tasks.create_start_app_handler(app))
     app.add_event_handler("shutdown", tasks.create_stop_app_handler(app))
 
-    #@repeat_every(seconde=config.CDN_LINK_LIFESPAN)
+    #@repeat_every(seconds=config.CDN_LINK_LIFESPAN)
     @app.on_event("startup")
     @repeat_every(seconds=5)
-    async def update_cdn_sharing_links(
-        
-        ) -> None:
-        logger.info("5 secs passed")
+    async def update_cdn_sharing_links() -> None:
+        pass
 
     app.include_router(api_router, prefix="/api")
 

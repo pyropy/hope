@@ -117,6 +117,9 @@ class GradeInDB(GradeCoreModel):
     background: str
 
 # subjects
+class SubjectGetModel(DBCoreModel):
+    grade_name_en: str
+
 class SubjectCoreModel(DBCoreModel):
     fk: int
     name_en: str
@@ -134,6 +137,10 @@ class SubjectInDB(SubjectCoreModel):
     background: str
 
 # branches
+class BranchGetModel(DBCoreModel):
+    grade_name_en: str
+    subject_name_en: str
+
 class BranchCoreModel(DBCoreModel):
     fk: int
     name_en: str
@@ -151,6 +158,11 @@ class BranchInDB(BranchCoreModel):
     background: str
 
 # lectures
+class LectureGetModel(DBCoreModel):
+    grade_name_en: str
+    subject_name_en: str
+    branch_name_en: str
+
 class LectureCoreModel(DBCoreModel):
     fk: int
     name_en: str

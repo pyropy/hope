@@ -1,5 +1,6 @@
 from typing import List
 
+from app.db.repositories.filter import filter, warn_injection
 from app.models.private import PresentationMediaCreate
 
 import logging
@@ -7,24 +8,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-BANNED_KEY_WORDS = [
-    'DELETE',
-    'DROP',
-    'UPDATE',
-    'SET',
-    'SELECT',
-]
-
-def filter(string) -> bool:
-    for key in BANNED_KEY_WORDS:
-        if key in string:
-            return False
-    return True
-
-def warn_injection():
-    logger.warn("--- CREATING QUERY ---")
-    logger.error("Query filter did not pass. Potential SQL injection. Aborting!")
-    logger.warn("--- CREATING QUERY ---")
 
 # ###
 # Structure queries

@@ -36,7 +36,7 @@ def create_private_tables() -> None:
         sa.Column("background", sa.Text, nullable=False),
         sa.Column("background_key", sa.Text, nullable=False),
         sa.ForeignKeyConstraint(['fk'], ['private.grade.id'], onupdate='CASCADE', ondelete='CASCADE'),
-        sa.UniqueConstraint('name_en'),
+        sa.UniqueConstraint('fk', 'name_en'),
         schema="private"    
     )
 
@@ -50,7 +50,7 @@ def create_private_tables() -> None:
         sa.Column("background", sa.Text, nullable=False),
         sa.Column("background_key", sa.Text, nullable=False),
         sa.ForeignKeyConstraint(['fk'], ['private.subject.id'], onupdate='CASCADE', ondelete='CASCADE'),
-        sa.UniqueConstraint('name_en'),
+        sa.UniqueConstraint('fk', 'name_en'),
         schema="private"    
     )
 
@@ -65,7 +65,7 @@ def create_private_tables() -> None:
         sa.Column("background", sa.Text, nullable=False),
         sa.Column("background_key", sa.Text, nullable=False),
         sa.ForeignKeyConstraint(['fk'], ['private.branch.id'], onupdate='CASCADE', ondelete='CASCADE'),
-        sa.UniqueConstraint('name_en'),
+        sa.UniqueConstraint('fk', 'name_en'),
         schema="private"    
     )
 
