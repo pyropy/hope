@@ -93,7 +93,7 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
     async def select_material(self, *, fk) -> MaterialResponseModel:
 
-        response_data = await self.__select_one(query=select_material_query(fk=fk))
+        pass
 
     async def __select_many(self, *, query):
         try:

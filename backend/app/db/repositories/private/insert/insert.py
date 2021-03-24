@@ -240,7 +240,7 @@ class PrivateDBInsertRepository(BaseDBRepository):
             logger.error(f"--- ForeignKeyViolationError RAISED TRYING TO INSERT ONE OF STRUCTURAL QUERIES ---")
             logger.error(e)
             logger.error(f"--- ForeignKeyViolationError RAISED TRYING TO INSERT ONE OF STRUCTURAL QUERIES ---")
-            raise HTTPException(status_code=404, detail=f"Insert game raised ForeignKeyViolationError. No such key in table lectures.")
+            raise HTTPException(status_code=404, detail=f"Insert query raised ForeignKeyViolationError. No such key in parent table. {query}")
         except Exception as e:
             logger.error(f"--- ERROR RAISED TRYING TO INSERT ONE OF STRUCTURAL QUERIES ---")
             logger.error(e)

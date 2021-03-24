@@ -116,6 +116,10 @@ class GradeInDB(GradeCoreModel):
     id: int
     background: str
 
+# grade response
+class GradeResponse(DBCoreModel):
+    grades: List[GradeInDB]
+
 # subjects
 class SubjectGetModel(DBCoreModel):
     grade_name_en: str
@@ -136,6 +140,7 @@ class SubjectInDB(SubjectCoreModel):
     id: int
     background: str
 
+# subject response
 class SubjectResponse(DBCoreModel):
     fk: int
     subjects: List[SubjectInDB]
@@ -161,6 +166,11 @@ class BranchInDB(BranchCoreModel):
     id: int
     background: str
 
+# branch response
+class BranchResponse(DBCoreModel):
+    fk: int
+    branches: List[BranchInDB]
+
 # lectures
 class LectureGetModel(DBCoreModel):
     grade_name_en: str
@@ -184,8 +194,14 @@ class LectureInDB(LectureCoreModel):
     id: int
     background: str
 
+# lecture response
+class LectureResponse(DBCoreModel):
+    fk: int
+    lectures: List[LectureInDB]
+
 # material response
 class MaterialResponseModel(DBCoreModel):
+    fk: int
     video: VideoInDB
     game: GameInDB
     book: BookInDB

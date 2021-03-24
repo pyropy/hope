@@ -13,6 +13,55 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
+def create_stored_procedures_insert() -> None:
+    pass
+
+def create_stored_procedures_select() -> None:
+    # grades select functions
+    os.execute("""
+    CREATE OR REPLACE FUNCTION select_grades_by_ids(text)
+        RETURNS TABLE (id int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        DECLARE 
+            ids INT[];
+        BEGIN
+        ids = string_to_array($1,',');
+        RETURN QUERY (SELECT * FROM private.grade WHERE private.grade.id = ANY(ids));
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    os.execute("""
+    CREATE OR REPLACE FUNCTION select_all_grades()
+        RETURNS TABLE (id int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.grade);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # subject select functions
+    os.execute("""
+    CREATE OR REPLACE FUNCTION select_subjects_by_ids(text, int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        DECLARE 
+            ids INT[];
+        BEGIN
+        ids = string_to_array($1,',');
+        RETURN QUERY (SELECT * FROM private.subject WHERE private.subject.id = ANY(ids) AND private.subject.fk = $2);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    os.execute("""
+    CREATE OR REPLACE FUNCTION select_all_subjects(int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.subject WHERE private.subject.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+
 def create_private_tables() -> None:
     # grades table
     op.create_table(

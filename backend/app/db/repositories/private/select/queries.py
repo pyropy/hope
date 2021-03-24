@@ -1,22 +1,22 @@
 from app.db.repositories.filter import filter, warn_injection
 
-def select_grades_query(ids=[]) -> str:
+def select_grades_query(ids=None) -> str:
     if ids:
-        available = str(ids).strip('[ ]')
+        available = ','.join(map(str,ids))
         return \
-            f"SELECT * FROM private.grade WHERE id IN ({available})"
+            f"SELECT (select_grades_by_ids('{available}')).*"
     else:
         return \
-            f"SELECT * FROM private.grade"
+            f"SELECT (select_all_grades()).*"
 
 def select_subject_query(fk, ids=[]) -> str:
     if ids:
-        available = str(ids).strip('[ ]')
+        available = ','.join(map(str,ids))
         return \
-            f"SELECT * FROM private.subject WHERE id IN ({available}) AND fk = {fk}"
+            f"SELECT (select_subjects_by_ids('{available}', {fk})).*"
     else:
         return \
-            f"SELECT * FROM private.subject WHERE fk = {fk}"
+            f"SELECT (select_all_subjects({fk})).*"
 
 def select_branch_query(fk) -> str:
     return \
@@ -62,4 +62,15 @@ def get_lecture_by_name_query(fk, lecture_name) -> str:
     else:
         warn_injection()
         return None
+
+# material queries
+def slecet_material_query(fk, material_type) -> str:
+    return \
+        f"SELCT * FROM private.{material_type} WHERE fk = {fk}"
+
+def select_material_parts(fk, material_type, part_type) -> str:
+    return \
+        f"SELECT * FROM private.{material_type}_{part_type} WHERE fk = {fk}"
+
+
 
