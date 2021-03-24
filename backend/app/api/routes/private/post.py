@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi import Depends, Body
 from starlette.status import HTTP_201_CREATED
 

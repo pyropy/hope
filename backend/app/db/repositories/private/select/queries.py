@@ -63,7 +63,10 @@ def get_lecture_by_name_query(fk, lecture_name) -> str:
         warn_injection()
         return None
 
-# material queries
+
+###################
+# material queries NOTE: JUST DO IT
+###################
 def slecet_material_query(fk, material_type) -> str:
     return \
         f"SELCT * FROM private.{material_type} WHERE fk = {fk}"

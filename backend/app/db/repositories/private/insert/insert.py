@@ -81,23 +81,28 @@ class PrivateDBInsertRepository(BaseDBRepository):
             medium=images,
         )
 
-        audio_query = insert_presentation_media_query(
-            presentation=table,
-            media_type='audio',
-            medium=audio,
-        )
+        if audio:
+            audio_query = insert_presentation_media_query(
+                presentation=table,
+                media_type='audio',
+                medium=audio,
+            )
 
         try:
             inserted_presentation = await self.db.fetch_one(query=query)
             inserted_images = await self.db.fetch_all(query=images_query)
-            inserted_audio = await self.db.fetch_all(query=audio_query) 
+            
+            if audio:
+                inserted_audio = await self.db.fetch_all(query=audio_query) 
 
             images = []
             audios = []
             for image in inserted_images:
                 images.append(PresentationMediaInDB(**image))
-            for audio in inserted_audio:
-                audios.append(PresentationMediaInDB(**audio))
+                
+            if audio:
+                for audio in inserted_audio:
+                    audios.append(PresentationMediaInDB(**audio))
 
 
         except ForeignKeyViolationError as e:

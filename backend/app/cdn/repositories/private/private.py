@@ -182,6 +182,9 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
             except:
                 pass
 
+        if not images:
+            raise HTTPException(status_code=404, detail=f"No images found a path {prefix}. Images must be present!")
+
         return (images, audios)
 
     def form_book_insert_data(self, *, prefix) -> Tuple:

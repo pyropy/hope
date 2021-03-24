@@ -122,7 +122,9 @@ async def get_private_lectures(
 
     return LectureResponse(lectures=response, fk=fk.id, path=path + '/' + fk.name_ru)
 
-
+# ######
+# NOTE JUST DO IT
+# ######
 @router.get("/material", response_model=MaterialResponseModel, name="private:get-material", status_code=HTTP_200_OK)
 async def get_private_material(
     grade_name_en: str,
