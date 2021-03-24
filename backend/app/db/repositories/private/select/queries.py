@@ -26,6 +26,10 @@ def select_lecture_query(fk) -> str:
     return \
         f"SELECT * FROM private.lecture WHERE fk = {fk}"
 
+def select_material_query(fk) -> str:
+    return \
+        f"SELECT * FROM private.video "
+
 
 def get_grade_by_name_query(grade_name) -> str:
     if filter(grade_name):

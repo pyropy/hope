@@ -10,6 +10,7 @@ from app.models.private import GradeInDB
 from app.models.private import SubjectInDB
 from app.models.private import BranchInDB
 from app.models.private import LectureInDB
+from app.models.private import MaterialResponseModel
 
 import logging
 
@@ -90,6 +91,9 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         return response
 
+    async def select_material(self, *, fk) -> MaterialResponseModel:
+
+        response_data = await self.__select_one(query=select_material_query(fk=fk))
 
     async def __select_many(self, *, query):
         try:
@@ -99,10 +103,6 @@ class PrivateDBSelectRepository(BaseDBRepository):
             logger.error(e)
             logger.error("--- SELECT QUERY RAISED UNHANDLED ERROR ---") 
             raise HTTPException(status_code=400, detail=f"Unhandled error raised trying to execute select query {query}. Error {e}")
-
-        if not response:
-            # remove query from fstring before deployment
-            raise HTTPException(status_code=404, detail=f"Query found nothing! {query}")
 
         return response
 

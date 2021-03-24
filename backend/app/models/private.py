@@ -136,6 +136,10 @@ class SubjectInDB(SubjectCoreModel):
     id: int
     background: str
 
+class SubjectResponse(DBCoreModel):
+    fk: int
+    subjects: List[SubjectInDB]
+
 # branches
 class BranchGetModel(DBCoreModel):
     grade_name_en: str
@@ -179,3 +183,11 @@ class LectureCreateModel(LectureCoreModel):
 class LectureInDB(LectureCoreModel):
     id: int
     background: str
+
+# material response
+class MaterialResponseModel(DBCoreModel):
+    video: VideoInDB
+    game: GameInDB
+    book: BookInDB
+    practice: PresentationInDB
+    theory: PresentationInDB
