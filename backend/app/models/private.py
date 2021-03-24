@@ -143,6 +143,7 @@ class SubjectInDB(SubjectCoreModel):
 # subject response
 class SubjectResponse(DBCoreModel):
     fk: int
+    path: str
     subjects: List[SubjectInDB]
 
 # branches
@@ -169,6 +170,7 @@ class BranchInDB(BranchCoreModel):
 # branch response
 class BranchResponse(DBCoreModel):
     fk: int
+    path: str
     branches: List[BranchInDB]
 
 # lectures
@@ -197,6 +199,7 @@ class LectureInDB(LectureCoreModel):
 # lecture response
 class LectureResponse(DBCoreModel):
     fk: int
+    path: str
     lectures: List[LectureInDB]
 
 # material response

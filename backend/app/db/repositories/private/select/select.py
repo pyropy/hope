@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from app.db.repositories.base import BaseDBRepository
 from fastapi import HTTPException
 
@@ -24,26 +24,26 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         return GradeInDB(**response)
 
-    async def get_subject_by_name(self, *, grade_name, subject_name) -> SubjectInDB:
+    async def get_subject_by_name(self, *, grade_name, subject_name) -> Tuple[SubjectInDB, str]:
         # get grade id (fk for subject)
         grade = await self.get_grade_by_name(grade_name=grade_name)
 
         response = await self.__select_one(query=get_subject_by_name_query(fk=grade.id, subject_name=subject_name))
-        return SubjectInDB(**response)
+        return SubjectInDB(**response), grade.name_ru
 
-    async def get_branch_by_name(self, *, grade_name, subject_name, branch_name) -> BranchInDB:
+    async def get_branch_by_name(self, *, grade_name, subject_name, branch_name) -> Tuple[BranchInDB, str]:
         # get subject id (fk for branch)
-        subject = await self.get_subject_by_name(grade_name=grade_name, subject_name=subject_name)
+        (subject, path) = await self.get_subject_by_name(grade_name=grade_name, subject_name=subject_name)
 
         response = await self.__select_one(query=get_branch_by_name_query(fk=subject.id, branch_name=branch_name))
-        return BranchInDB(**response)
+        return BranchInDB(**response), path + '/' + subject.name_ru
 
-    async def get_lecture_by_name(self, *, grade_name, subject_name, branch_name, lecture_name) -> LectureInDB:
+    async def get_lecture_by_name(self, *, grade_name, subject_name, branch_name, lecture_name) -> Tuple[LectureInDB, str]:
         # get branch id (fk for lecture)
-        branch = await self.get_branch_by_name(grade_name=grade_name, subject_name=subject_name, branch_name=branch_name)
+        (branch, path) = await self.get_branch_by_name(grade_name=grade_name, subject_name=subject_name, branch_name=branch_name)
 
         response = await self.__select_one(query=get_lecture_by_name_query(fk=branch.id, lecture_name=lecture_name))
-        return LectureInDB(**response)
+        return LectureInDB(**response), path + '/' + branch.name_ru
 
     async def select_grades(self, *, ids=None) -> List[GradeInDB]:
         """

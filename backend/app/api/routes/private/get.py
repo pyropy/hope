@@ -65,7 +65,7 @@ async def get_private_subjects(
     fk = await db_repo.get_grade_by_name(grade_name=grade_name_en)
     response = await db_repo.select_subjects(fk=fk.id)
 
-    return SubjectResponse(subjects=response, fk=fk.id)
+    return SubjectResponse(subjects=response, fk=fk.id, path=fk.name_ru)
 
 @router.get("/branch", response_model=BranchResponse, name="private:get-branches", status_code=HTTP_200_OK)
 async def get_private_branches(
@@ -89,10 +89,10 @@ async def get_private_branches(
     # no:
     #     return 402 Payment required
     # super user (admin) will skip process id validation
-    fk = await db_repo.get_subject_by_name(grade_name=grade_name_en, subject_name=subject_name_en)
+    (fk, path) = await db_repo.get_subject_by_name(grade_name=grade_name_en, subject_name=subject_name_en)
     response = await db_repo.select_branches(fk=fk.id)
 
-    return BranchResponse(branches=response, fk=fk.id)
+    return BranchResponse(branches=response, fk=fk.id, path=path + '/' + fk.name_ru)
 
 @router.get("/lecture", response_model=LectureResponse, name="private:get-lectures", status_code=HTTP_200_OK)
 async def get_private_lectures(
@@ -117,10 +117,11 @@ async def get_private_lectures(
     # no:
     #     return 402 Payment required
     # super user (admin) will skip process id validation
-    fk = await db_repo.get_branch_by_name(grade_name=grade_name_en, subject_name=subject_name_en, branch_name=branch_name_en)
+    (fk, path) = await db_repo.get_branch_by_name(grade_name=grade_name_en, subject_name=subject_name_en, branch_name=branch_name_en)
     response = await db_repo.select_lectures(fk=fk.id)
 
-    return LectureResponse(lectures=response, fk=fk.id)
+    return LectureResponse(lectures=response, fk=fk.id, path=path + '/' + fk.name_ru)
+
 
 @router.get("/material", response_model=MaterialResponseModel, name="private:get-material", status_code=HTTP_200_OK)
 async def get_private_material(

@@ -18,7 +18,7 @@ def create_stored_procedures_insert() -> None:
 
 def create_stored_procedures_select() -> None:
     # grades select functions
-    os.execute("""
+    op.execute("""
     CREATE OR REPLACE FUNCTION select_grades_by_ids(text)
         RETURNS TABLE (id int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
         AS $$
@@ -30,7 +30,7 @@ def create_stored_procedures_select() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
-    os.execute("""
+    op.execute("""
     CREATE OR REPLACE FUNCTION select_all_grades()
         RETURNS TABLE (id int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
         AS $$
@@ -39,8 +39,17 @@ def create_stored_procedures_select() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
+    op.execute("""
+     CREATE OR REPLACE FUNCTION select_grade_by_name(text)
+        RETURNS TABLE (id int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.grade WHERE private.grade.name_en = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
     # subject select functions
-    os.execute("""
+    op.execute("""
     CREATE OR REPLACE FUNCTION select_subjects_by_ids(text, int)
         RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
         AS $$
@@ -52,7 +61,7 @@ def create_stored_procedures_select() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
-    os.execute("""
+    op.execute("""
     CREATE OR REPLACE FUNCTION select_all_subjects(int)
         RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
         AS $$
@@ -61,6 +70,138 @@ def create_stored_procedures_select() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_subject_by_name(text, int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.subject WHERE private.subject.name_en = $1 AND private.subject.fk = $2);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # branch select functions
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_all_branches(int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.branch WHERE private.branch.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_branch_by_name(text, int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.branch WHERE private.branch.name_en = $1 AND private.branch.fk = $2);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # lecture select function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_all_lectures(int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), description text, background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.lecture WHERE private.lecture.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_lecture_by_name(text, int)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), description text, background text, background_key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.lecture WHERE private.lecture.name_en = $1 AND private.lecture.fk = $2);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # theory
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_theory(int)
+        RETURNS TABLE (id int, name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.theory WHERE private.theory.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # thoery images
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_theory_images(int)
+        RETURNS TABLE (url varchar(20), "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT url, "order", key FROM private.theory_image WHERE private.theory_image.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # theory audio
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_theory_audio(int)
+        RETURNS TABLE (url varchar(20), "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT url, "order", key FROM private.theory_audio WHERE private.theory_audio.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    
+    # practice
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_practice(int)
+        RETURNS TABLE (id int, name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.practice WHERE private.practice.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # practice images
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_practice_images(int)
+        RETURNS TABLE (url varchar(20), "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT url, "order", key FROM private.practice_image WHERE private.practice_image.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # practice audio
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_practice_audio(int)
+        RETURNS TABLE (url varchar(20), "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT url, "order", key FROM private.practice_audio WHERE private.practice_audio.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # video
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_video(int)
+        RETURNS TABLE (id int, url text, name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.video WHERE private.video.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    
+    # book
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_book(int)
+        RETURNS TABLE (id int, url text, name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.book WHERE private.book.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # game
+    op.execute("""
+    CREATE OR REPLACE FUNCTION select_game(int)
+        RETURNS TABLE (id int, url text, name_ru varchar(20), description text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT * FROM private.game WHERE private.game.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
 
 def create_private_tables() -> None:
     # grades table
@@ -254,6 +395,7 @@ def create_private_tables() -> None:
         EXECUTE PROCEDURE update_timestamp_function()
     """)
 
+    create_stored_procedures_select()
 
 
 def drop_private_tables() -> None:
