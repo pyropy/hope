@@ -27,8 +27,10 @@ class PresentationMediaInDB(PresentationMediaCore):
 class PresentationMediaCreate(PresentationMediaCore):
     fk: int
 
-class PresentationInDB(PresentationModelCore):
+class PresentationMasterInDB(PresentationModelCore):
     id: int
+
+class PresentationInDB(PresentationMasterInDB):
     images: List[PresentationMediaInDB]
     audio: List[PresentationMediaInDB]
 
@@ -204,9 +206,37 @@ class LectureResponse(DBCoreModel):
 
 # material response
 class MaterialResponseModel(DBCoreModel):
+    video: Optional[VideoInDB]
+    game: Optional[GameInDB]
+    book: Optional[BookInDB]
+    practice: Optional[PresentationInDB]
+    theory: Optional[PresentationInDB]
+
+class MaterialBulk(DBCoreModel):
+    # video
+    video_url: str
+    video_name_ru: str
+    video_description: str
+    video_key: Optional[str]
+    # game
+    game_url: str
+    game_name_ru: str
+    game_description: str
+    # theory
+    theory_name_ru: str
+    theory_description: str
+    theory_key: str
+    # practice
+    practice_name_ru: str
+    practice_description: str
+    practice_key: str
+    # book
+    book_url: str
+    book_name_ru: str
+    book_key: str
+    book_description: str
+
+class MaterialResponse(DBCoreModel):
     fk: int
-    video: VideoInDB
-    game: GameInDB
-    book: BookInDB
-    practice: PresentationInDB
-    theory: PresentationInDB
+    path: str
+    material: MaterialResponseModel

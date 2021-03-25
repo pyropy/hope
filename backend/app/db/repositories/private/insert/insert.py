@@ -91,7 +91,8 @@ class PrivateDBInsertRepository(BaseDBRepository):
         try:
             inserted_presentation = await self.db.fetch_one(query=query)
             inserted_images = await self.db.fetch_all(query=images_query)
-            
+            print(images_query)
+
             if audio:
                 inserted_audio = await self.db.fetch_all(query=audio_query) 
 

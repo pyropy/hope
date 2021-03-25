@@ -12,6 +12,15 @@ from app.models.private import BranchInDB
 from app.models.private import LectureInDB
 from app.models.private import MaterialResponseModel
 
+from app.models.private import VideoInDB
+from app.models.private import GameInDB
+from app.models.private import BookInDB
+from app.models.private import PresentationInDB
+from app.models.private import PresentationMediaInDB
+from app.models.private import PresentationMasterInDB
+
+from app.models.private import MaterialBulk
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -92,8 +101,59 @@ class PrivateDBSelectRepository(BaseDBRepository):
         return response
 
     async def select_material(self, *, fk) -> MaterialResponseModel:
+        #response = await self.__select_one(query=select_material_query(fk=fk))
+        #material = MaterialBulk(**response)
 
-        pass
+        video = await self.select_video(fk=fk)
+        book = await self.select_book(fk=fk)
+        game = await self.select_game(fk=fk)
+        theory = await self.select_presentation(fk=fk, presentation='theory')
+        practice = await self.select_presentation(fk=fk, presentation='practice')
+
+        return MaterialResponseModel(
+            video=video,
+            book=book,
+            game=game,
+            theory=theory,
+            practice=practice
+        )
+
+    async def select_video(self, *, fk) -> VideoInDB:
+        response = await self.__select_one(query=select_one_material_query(fk=fk, table='video'), raise_404=False)
+        if not response:
+            return None
+        return VideoInDB(**response)
+
+    async def select_book(self, *, fk) -> BookInDB:
+        response = await self.__select_one(query=select_one_material_query(fk=fk, table='book'), raise_404=False)
+        if not response:
+            return None
+        return BookInDB(**response)
+
+    async def select_game(self, *, fk) -> GameInDB:
+        response = await self.__select_one(query=select_one_material_query(fk=fk, table='game'), raise_404=False)
+        if not response:
+            return None
+        return GameInDB(**response)
+
+    async def select_presentation(self, *, fk, presentation) -> PresentationInDB:
+        master = await self.__select_one(query=select_one_material_query(fk=fk, table=presentation), raise_404=False)
+        images = await self.select_presentation_parts(fk=fk, presentation=presentation, media_type='image')
+        audio = await self.select_presentation_parts(fk=fk, presentation=presentation, media_type='audio')
+        if not master:
+            return None
+        return PresentationInDB(
+            **master,
+            images=images, 
+            audio=audio,)
+
+    async def select_presentation_parts(self, *, fk, presentation, media_type) -> List[PresentationMediaInDB]:
+        medium = await self.__select_many(query=select_material_parts(fk=fk, presentation=presentation, media_type=media_type))
+        if not medium:
+            return []
+
+        response = [PresentationMediaInDB(**r) for r in medium]
+        return response
 
     async def __select_many(self, *, query):
         try:
@@ -106,7 +166,7 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         return response
 
-    async def __select_one(self, *, query):
+    async def __select_one(self, *, query, raise_404=True):
         try:
             response = await self.db.fetch_one(query=query)
         except Exception as e:
@@ -115,7 +175,7 @@ class PrivateDBSelectRepository(BaseDBRepository):
             logger.error("--- SELECT QUERY RAISED UNHANDLED ERROR ---") 
             raise HTTPException(status_code=400, detail=f"Unhandled error raised trying to execute select query {query}. Error {e}")
         
-        if not response:
+        if not response and raise_404:
             # remove query from fstring before deployment
             raise HTTPException(status_code=404, detail=f"Query found nothing! {query}")
 

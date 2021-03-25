@@ -17,7 +17,7 @@ def insert_grades_query(name_en, name_ru, background_key, background) -> str:
 
     if filter(f"{name_en} {name_ru} {background_key} {background}"):
         return \
-        f"SELECT (insert_grade('{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
+        f"SELECT (private.insert_grade('{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
     else:
         warn_injection()
         return None
@@ -27,7 +27,7 @@ def insert_subject_query(fk, name_en, name_ru, background_key, background) -> st
 
     if filter(f"{fk} {name_en} {name_ru} {background_key} {background}"):
         return \
-        f"SELECT (insert_subject({fk}, '{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
+        f"SELECT (private.insert_subject({fk}, '{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
     else:
         warn_injection()
         return None
@@ -36,7 +36,7 @@ def insert_branch_query(fk, name_en, name_ru, background_key, background) -> str
 
     if filter(f"{fk} {name_en} {name_ru} {background_key} {background}"):
         return \
-        f"SELECT (insert_branch({fk}, '{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
+        f"SELECT (private.insert_branch({fk}, '{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
     else:
         warn_injection()
         return None
@@ -45,7 +45,7 @@ def insert_lecture_query(fk, name_en, name_ru, description, background_key, back
 
     if filter(f"{fk} {name_en} {name_ru} {description} {background_key} {background}"):
         return \
-        f"SELECT (insert_lecture({fk}, '{name_en}', '{name_ru}', '{description}', '{background_key}', '{background}')).*"
+        f"SELECT (private.insert_lecture({fk}, '{name_en}', '{name_ru}', '{description}', '{background_key}', '{background}')).*"
     else:
         warn_injection()
         return None
@@ -58,7 +58,7 @@ def insert_video_query(fk, name_ru, description, key, url) -> str:
 
     if filter(f"{fk} {name_ru} {description} {key} {url}"):
         return \
-        f"SELECT (insert_video({fk}, '{name_ru}', '{description}', '{key}', '{url}')).*"
+        f"SELECT (private.insert_video({fk}, '{name_ru}', '{description}', '{key}', '{url}')).*"
     else:
         warn_injection()
         return None
@@ -66,7 +66,7 @@ def insert_video_query(fk, name_ru, description, key, url) -> str:
 def insert_game_query(fk, name_ru, description, url) -> str:
     if filter(f"{fk} {name_ru} {description} {url}"):
         return \
-        f"SELECT (insert_game({fk}, '{name_ru}', '{description}', '{url}')).*"
+        f"SELECT (private.insert_game({fk}, '{name_ru}', '{description}', '{url}')).*"
             
     else:
         warn_injection()
@@ -76,7 +76,7 @@ def insert_book_query(fk, name_ru, description, key, url) -> str:
 
     if filter(f"{fk} {name_ru} {description} {key} {url}"):
         return \
-        f"SELECT (insert_book({fk}, '{name_ru}', '{description}', '{key}', '{url}')).*"
+        f"SELECT (private.insert_book({fk}, '{name_ru}', '{description}', '{key}', '{url}')).*"
 
     else:
         warn_injection()
@@ -91,11 +91,8 @@ def insert_presentation_query(presentation, fk, name_ru, description, key) -> st
     key: presentation key in cdn
     '''
 
-    if presentation == "theory": 
-        return \
-            f"SELECT (insert_theory({fk}, '{name_ru}', '{description}', '{key}')).*"
-    else:
-        pass
+    return \
+        f"SELECT (private.insert_{presentation}({fk}, '{name_ru}', '{description}', '{key}')).*"
 
 def insert_presentation_media_query(presentation, media_type , medium: List[PresentationMediaCreate]) -> str:
     '''
@@ -106,27 +103,15 @@ def insert_presentation_media_query(presentation, media_type , medium: List[Pres
         url: sharing link
         order: order number in which it should be displayed when forming presentation
     '''
-    foreign_keys = []
-    order_numbers = []
-    urls = []
-    keys = []
-    for media in medium:
-        foreign_keys.append(media.fk)
-        order_numbers.append(media.order)
-        urls.append(media.url)
-        keys.append(media.key)
+    foreign_keys, order_numbers, urls, keys = map(list, zip( *((media.fk, media.order, media.url, media.key) for media in medium)))
 
     foreign_keys = ','.join(map(str,foreign_keys))
     order_numbers = ','.join(map(str,order_numbers))
     urls = ','.join(map(str,urls))
     keys = ','.join(map(str,keys))
 
-    if media_type == "image":
-        return \
-            f"SELECT (insert_theory_image('{foreign_keys}', '{order_numbers}', '{{{urls}}}', '{{{keys}}}')).*"
-    elif media_type == "audio":
-        return \
-            f"SELECT (insert_theory_audio('{foreign_keys}', '{order_numbers}', '{{{urls}}}', '{{{keys}}}')).*"
+    return \
+        f"SELECT (private.insert_{presentation}_{media_type}('{{{foreign_keys}}}'::int[], '{{{order_numbers}}}'::int[], '{{{urls}}}', '{{{keys}}}')).*"
 
 
 # timestamp

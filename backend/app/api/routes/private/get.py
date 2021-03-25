@@ -27,7 +27,7 @@ from app.models.private import BookInDB
 from app.models.private import PresentationInDB
 from app.models.private import GameInDB
 # material
-from app.models.private import MaterialResponseModel
+from app.models.private import MaterialResponse
 
 
 router = APIRouter()
@@ -125,14 +125,14 @@ async def get_private_lectures(
 # ######
 # NOTE JUST DO IT
 # ######
-@router.get("/material", response_model=MaterialResponseModel, name="private:get-material", status_code=HTTP_200_OK)
+@router.get("/material", response_model=MaterialResponse, name="private:get-material", status_code=HTTP_200_OK)
 async def get_private_material(
     grade_name_en: str,
     subject_name_en: str,
     branch_name_en: str,
     lecture_name_en: str,
     db_repo: PrivateDBRepository = Depends(get_db_repository(PrivateDBRepository)),
-    ) -> MaterialResponseModel:
+    ) -> MaterialResponse:
     # we will accept token for validating user and available grade id's as well as available subject id's
     # available grade id's for a user will be returned to him when he logs in, same time as token
     # we get grade ID by branch.grade_name_en
@@ -151,8 +151,8 @@ async def get_private_material(
     #     return 402 Payment required
     # super user (admin) will skip process id validation
 
-    fk = await db_repo.get_lecture_by_name(grade_name=grade_name, subject_name=subject_name, branch_name=branch_name, lecture_name=lecture_name)
+    (fk, path) = await db_repo.get_lecture_by_name(grade_name=grade_name_en, subject_name=subject_name_en, branch_name=branch_name_en, lecture_name=lecture_name_en)
 
     response = await db_repo.select_material(fk=fk.id)
 
-    return response
+    return MaterialResponse(material=response, path=path, fk=fk.id)
