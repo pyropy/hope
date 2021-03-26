@@ -7,6 +7,10 @@ from fastapi import HTTPException
 
 from app.models.private import PresentationMediaCreate
 
+from app.models.private import StructureAllModel
+from app.models.private import MaterialAllModel
+from app.models.private import AudioImagesAllModel
+
 # parsers
 from app.cdn.repositories.parsers import *
 
@@ -267,9 +271,69 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         prefix = get_prefix_by_inner_key(key=key)
         self.delete_folder(prefix=prefix)
     
-
     def delete_folder(self, *, prefix) -> None:
         # list all objects with prefix
         list_ = self.get_object_keys(prefix=prefix)
         # delete all listed objects
         self.delete_keys(list_of_keys=list_)
+
+    def compare(self, *, db_list_of_keys, cdn_list_of_keys) -> None:
+        """
+        Accepts list of Dict with key = 'Key' and value = object_key
+        to be compared against self.__KEYS
+
+        Returns tuple (checked, extra_list, extra_cdn)
+
+        checked - keys present in both list and self.__KEYS
+        extra_list - keys present in list but not in self.__KEYS
+        extra_cdn - keys present in self.__KEYS but not list
+        """
+
+        checked = []
+        extra_list = []
+        extra_cdn = []
+
+        for key_object in cdn_list_of_keys:
+            if key_object in db_list_of_keys:
+                checked.append(key_object)
+                db_list_of_keys.remove(key_object)
+            elif key_object in checked:
+                pass
+            else:
+                extra_cdn.append(key_object)
+
+        extra_list = db_list_of_keys
+
+        # filter out folders
+
+        return (checked, extra_list, extra_cdn)
+
+    def create_key_list_from_lists_of_objects(
+        self, 
+        *,
+        grades: List[StructureAllModel],
+        subjects: List[StructureAllModel],
+        branches: List[StructureAllModel],
+        lectures: List[StructureAllModel],
+        theory: List[MaterialAllModel],
+        practice: List[MaterialAllModel],
+        theory_images: List[AudioImagesAllModel],
+        theory_audio: List[AudioImagesAllModel],
+        practice_images: List[AudioImagesAllModel],
+        practice_audio: List[AudioImagesAllModel],
+        ) -> None:
+
+        keys = []
+        keys.extend(structure_keys_from_list_of_objects(grades))
+        keys.extend(structure_keys_from_list_of_objects(subjects))
+        keys.extend(structure_keys_from_list_of_objects(lectures))
+
+        keys.extend(material_keys_from_list_of_objects(theory))
+        keys.extend(material_keys_from_list_of_objects(practice))
+
+        keys.extend(audio_images_keys_from_list_of_objects(theory_images))
+        keys.extend(audio_images_keys_from_list_of_objects(theory_audio))
+        keys.extend(audio_images_keys_from_list_of_objects(practice_images))
+        keys.extend(audio_images_keys_from_list_of_objects(practice_audio))
+
+        return keys

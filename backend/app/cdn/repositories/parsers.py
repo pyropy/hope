@@ -1,5 +1,9 @@
 from typing import List, Tuple
 
+from app.models.private import StructureAllModel
+from app.models.private import MaterialAllModel
+from app.models.private import AudioImagesAllModel
+
 def get_specific_keys_from_content_list(content_list, **kwargs) -> List:
         '''
             Accept raw list of content
@@ -160,3 +164,18 @@ def get_prefix_by_inner_key(key: str) -> str:
     sufix = key.split("/")[-1]
     
     return key.replace(sufix, '')
+
+def structure_keys_from_list_of_objects(list_: List[StructureAllModel]):
+    list_of_keys = [{"Key": structure_object.background_key} for structure_object in list_]
+
+    return list_of_keys
+
+def material_keys_from_list_of_objects(list_: List[MaterialAllModel]):
+    list_of_keys = [{"Key": material_object.key} for material_object in list_]
+
+    return list_of_keys
+
+def audio_images_keys_from_list_of_objects(list_: List[AudioImagesAllModel]):
+    list_of_keys = [{"Key": media_object.key} for media_object in list_]
+
+    return list_of_keys

@@ -240,3 +240,18 @@ class MaterialResponse(DBCoreModel):
     fk: int
     path: str
     material: MaterialResponseModel
+
+# ###
+# select all
+# ###
+class StructureAllModel(DBCoreModel):
+    id: int
+    background_key: str
+
+class MaterialAllModel(DBCoreModel):
+    id: int
+    key: str
+
+class AudioImagesAllModel(DBCoreModel):
+    order: int
+    key: str

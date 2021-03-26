@@ -21,6 +21,10 @@ from app.models.private import PresentationMasterInDB
 
 from app.models.private import MaterialBulk
 
+from app.models.private import StructureAllModel
+from app.models.private import MaterialAllModel
+from app.models.private import AudioImagesAllModel
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -67,6 +71,15 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         return response        
 
+    async def select_all_grades(self) -> List[StructureAllModel]:
+        """
+        Returns list of id, background_keys for all grades in database
+        """
+        records = await self.__select_many(query=select_all_grade_keys_query())
+
+        response = [StructureAllModel(**record) for record in records] 
+        return response       
+
     async def select_subjects(self, *, fk, ids=None) -> List[SubjectInDB]:
         """
         Returns list of subjects available to customer, or all of them in ids=None
@@ -80,6 +93,15 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         return response
 
+    async def select_all_subjects(self) -> List[StructureAllModel]:
+        """
+        Returns list of id, background_keys for all subjects in database
+        """
+        records = await self.__select_many(query=select_all_subject_keys_query())
+
+        response = [StructureAllModel(**record) for record in records] 
+        return response       
+
     async def select_branches(self, *, fk) -> List[BranchInDB]:
 
         response_data = await self.__select_many(query=select_branch_query(fk=fk))
@@ -90,6 +112,15 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         return response
 
+    async def select_all_branches(self) -> List[StructureAllModel]:
+        """
+        Returns list of id, background_keys for all branches in database
+        """
+        records = await self.__select_many(query=select_all_branch_keys_query())
+
+        response = [StructureAllModel(**record) for record in records] 
+        return response       
+
     async def select_lectures(self, *, fk) -> List[LectureInDB]:
 
         response_data = await self.__select_many(query=select_lecture_query(fk=fk))
@@ -99,6 +130,15 @@ class PrivateDBSelectRepository(BaseDBRepository):
             response.append(LectureInDB(**data))
 
         return response
+
+    async def select_all_lectures(self) -> List[StructureAllModel]:
+        """
+        Returns list of id, background_keys for all lectures in database
+        """
+        records = await self.__select_many(query=select_all_lecture_keys_query())
+
+        response = [StructureAllModel(**record) for record in records] 
+        return response       
 
     async def select_material(self, *, fk) -> MaterialResponseModel:
         #response = await self.__select_one(query=select_material_query(fk=fk))
@@ -124,11 +164,30 @@ class PrivateDBSelectRepository(BaseDBRepository):
             return None
         return VideoInDB(**response)
 
+
+    async def select_all_video(self) -> List[MaterialAllModel]:
+        """
+        Returns list of id, keys for all video in database
+        """
+        records = await self.__select_many(query=select_all_material_keys_query(table='video'))
+
+        response = [MaterialAllModel(**record) for record in records] 
+        return response       
+
     async def select_book(self, *, fk) -> BookInDB:
         response = await self.__select_one(query=select_one_material_query(fk=fk, table='book'), raise_404=False)
         if not response:
             return None
         return BookInDB(**response)
+
+    async def select_all_books(self) -> List[MaterialAllModel]:
+        """
+        Returns list of id, keys for all books in database
+        """
+        records = await self.__select_many(query=select_all_material_keys_query(table='book'))
+
+        response = [MaterialAllModel(**record) for record in records] 
+        return response       
 
     async def select_game(self, *, fk) -> GameInDB:
         response = await self.__select_one(query=select_one_material_query(fk=fk, table='game'), raise_404=False)
@@ -147,6 +206,15 @@ class PrivateDBSelectRepository(BaseDBRepository):
             images=images, 
             audio=audio,)
 
+    async def select_all_presentation(self, presentation) -> List[MaterialAllModel]:
+        """
+        Returns list of id, keys for all presentation (theory | practice) in database
+        """
+        records = await self.__select_many(query=select_all_material_keys_query(table=presentation))
+
+        response = [MaterialAllModel(**record) for record in records] 
+        return response       
+
     async def select_presentation_parts(self, *, fk, presentation, media_type) -> List[PresentationMediaInDB]:
         medium = await self.__select_many(query=select_material_parts(fk=fk, presentation=presentation, media_type=media_type))
         if not medium:
@@ -154,6 +222,15 @@ class PrivateDBSelectRepository(BaseDBRepository):
 
         response = [PresentationMediaInDB(**r) for r in medium]
         return response
+
+    async def select_all_presentation_parts(self, presentation, media_type) -> List[AudioImagesAllModel]:
+        """
+        Returns list of order, keys for all presentation (theory | practice) parts (images | audio) in database
+        """
+        records = await self.__select_many(query=select_all_material_part_keys_query(presentation=presentation, media_type=media_type))
+
+        response = [MaterialAllModel(**record) for record in records] 
+        return response      
 
     async def __select_many(self, *, query):
         try:
