@@ -1,4 +1,3 @@
-from app.db.repositories.filter import filter, warn_injection
 
 def select_grades_query(ids=None) -> str:
     if ids:
@@ -27,41 +26,25 @@ def select_lecture_query(fk) -> str:
         f"SELECT (private.select_all_lectures({fk})).*"
 
 def get_grade_by_name_query(grade_name) -> str:
-    if filter(grade_name):
-        return \
-            f"SELECT (private.select_grade_by_name('{grade_name}')).*"
-    else:
-        warn_injection()
-        return None
+    return \
+        f"SELECT (private.select_grade_by_name('{grade_name}')).*"
 
 def get_subject_by_name_query(fk, subject_name) -> str:
-    if filter(f"{fk} {subject_name}"):
-        return \
-            f"SELECT (private.select_subject_by_name('{subject_name}', {fk})).*"
-    else:
-        warn_injection()
-        return None
+    return \
+        f"SELECT (private.select_subject_by_name('{subject_name}', {fk})).*"
 
 def get_branch_by_name_query(fk, branch_name) -> str:
-    if filter(f"{fk} {branch_name}"):
-        return \
-            f"SELECT (private.select_branch_by_name('{branch_name}', {fk})).*"
-    else:
-        warn_injection()
-        return None
+    return \
+        f"SELECT (private.select_branch_by_name('{branch_name}', {fk})).*"
 
 def get_lecture_by_name_query(fk, lecture_name) -> str:
-    if filter(f"{fk} {lecture_name}"):
-        return \
-            f"SELECT (private.select_lecture_by_name('{lecture_name}', {fk})).*"
-    else:
-        warn_injection()
-        return None
+    return \
+        f"SELECT (private.select_lecture_by_name('{lecture_name}', {fk})).*"
 
 
-###################
-# material queries NOTE: JUST DO IT
-###################
+# ###
+# material queries
+# ###
 def select_material_query(fk) -> str:
     return \
         f"SELECT (private.select_material({fk})).*"

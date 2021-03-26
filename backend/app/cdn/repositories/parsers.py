@@ -154,3 +154,9 @@ def check_key_exists_in_list_of_objects(key, list_of_objects) -> bool:
 
         print(f"Didn't find key {key} in \n {list_of_objects}")        
         return False
+
+def get_prefix_by_inner_key(key: str) -> str:
+
+    sufix = key.split("/")[-1]
+    
+    return key.replace(sufix, '')

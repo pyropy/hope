@@ -1,6 +1,5 @@
 from typing import List
 
-from app.db.repositories.filter import filter, warn_injection
 from app.models.private import PresentationMediaCreate
 
 import logging
@@ -14,73 +13,37 @@ logger = logging.getLogger(__name__)
 # ###
 
 def insert_grades_query(name_en, name_ru, background_key, background) -> str:
-
-    if filter(f"{name_en} {name_ru} {background_key} {background}"):
-        return \
+    return \
         f"SELECT (private.insert_grade('{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
-    else:
-        warn_injection()
-        return None
         
 
 def insert_subject_query(fk, name_en, name_ru, background_key, background) -> str:
-
-    if filter(f"{fk} {name_en} {name_ru} {background_key} {background}"):
-        return \
+    return \
         f"SELECT (private.insert_subject({fk}, '{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
-    else:
-        warn_injection()
-        return None
 
 def insert_branch_query(fk, name_en, name_ru, background_key, background) -> str:
-
-    if filter(f"{fk} {name_en} {name_ru} {background_key} {background}"):
-        return \
+    return \
         f"SELECT (private.insert_branch({fk}, '{name_en}', '{name_ru}', '{background_key}', '{background}')).*"
-    else:
-        warn_injection()
-        return None
 
 def insert_lecture_query(fk, name_en, name_ru, description, background_key, background) -> str:
-
-    if filter(f"{fk} {name_en} {name_ru} {description} {background_key} {background}"):
-        return \
+    return \
         f"SELECT (private.insert_lecture({fk}, '{name_en}', '{name_ru}', '{description}', '{background_key}', '{background}')).*"
-    else:
-        warn_injection()
-        return None
 
 # ###
 # Material queries
 # ###
 
 def insert_video_query(fk, name_ru, description, key, url) -> str:
-
-    if filter(f"{fk} {name_ru} {description} {key} {url}"):
-        return \
+    return \
         f"SELECT (private.insert_video({fk}, '{name_ru}', '{description}', '{key}', '{url}')).*"
-    else:
-        warn_injection()
-        return None
 
 def insert_game_query(fk, name_ru, description, url) -> str:
-    if filter(f"{fk} {name_ru} {description} {url}"):
-        return \
+    return \
         f"SELECT (private.insert_game({fk}, '{name_ru}', '{description}', '{url}')).*"
-            
-    else:
-        warn_injection()
-        return None
 
 def insert_book_query(fk, name_ru, description, key, url) -> str:
-
-    if filter(f"{fk} {name_ru} {description} {key} {url}"):
-        return \
+    return \
         f"SELECT (private.insert_book({fk}, '{name_ru}', '{description}', '{key}', '{url}')).*"
-
-    else:
-        warn_injection()
-        return None
 
 def insert_presentation_query(presentation, fk, name_ru, description, key) -> str:
     '''

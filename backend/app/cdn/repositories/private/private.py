@@ -18,7 +18,7 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
 
     __KEYS = None
     
-    def __list_objects_raw(self, *, prefix=None, continuation_token=None) -> Dict:
+    def  __list_objects_raw(self, *, prefix=None, continuation_token=None) -> Dict:
         try:
             if prefix and continuation_token:
                 return self.client.list_objects_v2(Bucket=BUCKET, Prefix=prefix, ContinuationToken=continuation_token)
@@ -122,9 +122,9 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         return response
 
     def delete_keys(self, *, list_of_keys) -> Dict:
-        '''
+        """
         Accepts List of Dict with key = Key and value = object key 
-        '''
+        """
 
         response = self.client.delete_objects(Bucket=BUCKET, Delete={'Objects': list_of_keys})
         self.__KEYS = [key for key in self.__KEYS if key not in list_of_keys]
@@ -262,3 +262,14 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         except KeyError:
             raise HTTPException(status_code=404, detail="Background key error. Check your post data, and cdn! We didn't find any data in cdn for a given key")
 
+    def delete_folder_by_inner_key(self, *, key) -> None:
+        # get folder prefix from key
+        prefix = get_prefix_by_inner_key(key=key)
+        self.delete_folder(prefix=prefix)
+    
+
+    def delete_folder(self, *, prefix) -> None:
+        # list all objects with prefix
+        list_ = self.get_object_keys(prefix=prefix)
+        # delete all listed objects
+        self.delete_keys(list_of_keys=list_)

@@ -176,6 +176,105 @@ def create_stored_procedures_insert() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
+def create_stored_procedures_delete() -> None:
+    # grades delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_grade_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.grade WHERE private.grade.id = $1 RETURNING background_key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # subject delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_subject_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.subject WHERE private.subject.id = $1 RETURNING background_key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # branch delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_branch_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.branch WHERE private.branch.id = $1 RETURNING background_key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # lecture delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_lecture_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.lecture WHERE private.lecture.id = $1 RETURNING background_key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # theory delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_theory_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.theory WHERE private.theory.fk = $1 RETURNING private.theory.key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # practice delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_practice_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.practice WHERE private.practice.fk = $1 RETURNING private.practice.key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # book delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_book_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.book WHERE private.book.fk = $1 RETURNING private.book.key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # video delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_video_by_id(int)
+        RETURNS text
+        AS $$
+        DECLARE key text;
+        BEGIN
+        DELETE FROM private.video WHERE private.video.fk = $1 RETURNING private.video.key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # game delete function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.delete_game_by_id(int)
+        RETURNS VOID
+        AS $$
+        BEGIN
+        DELETE FROM private.game WHERE private.game.fk = $1;
+        END $$ LANGUAGE plpgsql;
+    """)
+
 def create_stored_procedures_select() -> None:
     # grades select functions
     op.execute("""
@@ -399,28 +498,37 @@ def drop_stored_procedures() -> None:
     "select_branch_by_name",
     "select_all_lectures",
     "select_theory_image",
-    "insert_grade",
-    "insert_game",
-    "insert_book",
-    "insert_video",
-    "insert_theory",
+    "select_material",
     "select_lecture_by_name",
     "select_theory_audio",
     "select_video",
     "select_book",
     "select_game",
-    "insert_theory_image",
-    "insert_theory_audio",
     "select_practice",
     "select_practice_image",
     "select_practice_audio",
+    "insert_grade",
+    "insert_game",
+    "insert_book",
+    "insert_video",
+    "insert_theory",
+    "insert_theory_image",
+    "insert_theory_audio",
     "insert_subject",
     "insert_branch",
     "insert_lecture",
     "insert_practice",
     "insert_practice_image",
     "insert_practice_audio",
-    "select_material",]
+    "delete_book_by_id",
+    "delete_branch_by_id",
+    "delete_game_by_id",
+    "delete_grade_by_id",
+    "delete_lecture_by_id",
+    "delete_practice_by_id",
+    "delete_subject_by_id",
+    "delete_theory_by_id",
+    "delete_video_by_id",]
 
     for procedure in procedure_list:
         op.execute(f"DROP FUNCTION private.{procedure}")
@@ -620,6 +728,7 @@ def create_private_tables() -> None:
 
     create_stored_procedures_insert()
     create_stored_procedures_select()
+    create_stored_procedures_delete()
 
 
 def drop_private_tables() -> None:
