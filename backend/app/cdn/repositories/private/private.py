@@ -304,7 +304,7 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
 
         extra_list = db_list_of_keys
 
-        # filter out folders
+        # TODO: filter out folders
 
         return (checked, extra_list, extra_cdn)
 

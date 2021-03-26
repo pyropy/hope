@@ -35,23 +35,35 @@ class PrivateDBDeleteRepository(BaseDBRepository):
         return await self.__delete(query=delete_book_query(id=id))
 
     async def delete_video(self, *, id) -> int:
-        return await self.__delete(query=delete_video_query(id=id))
+        return await self.__delete(query=delete_video_query(id=id), none_response_raise=False)
 
     async def delete_game(self, *, id) -> None:
         await self.db.fetch_one(query=delete_game_query(id=id))
 
 
-    async def __delete(self, *, query):
+    async def __delete(self, *, query, none_response_raise=True):
+        """
+        If returned from delete query is None return 404 (*)
+
+        * If none_response_raise is set to False, 404 will not be raised, 
+        rather return None from function
+        """
+
         try:
             response = await self.db.fetch_one(query=query)
-            key = response['key']
         except Exception as e:
             logger.error("--- ERROR TRYING TO DELETE ---")
             logger.error(e)
             logger.error("--- ERROR TRYING TO DELETE ---")
             raise HTTPException(status_code=400, detail=f"Unhandled error trying to delete. Exited with {e}. Query: {query}")
+        try:
+            key = response['key']
+            if not key:
+                raise HTTPException(status_code=404, detail="Trying to delete returned nothing.")
+        except Exception as e:
+            if none_response_raise:
+                raise HTTPException(status_code=400, detail=f"Trying to parse deleted values raised {e}")
+            else:
+                return None
 
-        if not key:
-            raise HTTPException(status_code=404, detail="Trying to delete returned nothing.")
-    
         return key
