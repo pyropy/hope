@@ -26,11 +26,11 @@ def delete_book_query(id) -> str:
     return \
         f"SELECT private.delete_book_by_id({id}) AS key"
 
-# we don't need to return anything from these
 def delete_video_query(id) -> str:
     return \
-        f"SELECT private.delete_video_by_id({id})"
+        f"SELECT private.delete_video_by_id({id}) AS key"
 
+# we don't need to return anything from these
 def delete_game_query(id) -> str:
     return \
         f"SELECT private.delete_game_by_id({id})"

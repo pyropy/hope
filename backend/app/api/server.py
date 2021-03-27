@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 import uvicorn
+
+from app.api.dependencies.updating import update_sharing_links_function
 
 from app.api.routes import router as api_router
 from app.core import config, tasks
@@ -25,11 +27,14 @@ def get_application():
     app.add_event_handler("startup", tasks.create_start_app_handler(app))
     app.add_event_handler("shutdown", tasks.create_stop_app_handler(app))
 
-    #@repeat_every(seconds=config.CDN_LINK_LIFESPAN)
+    # update sharing links every CDN_LIFESPAN - 1 day
+    # TODO figure out why this doesn't work and fix
     @app.on_event("startup")
-    @repeat_every(seconds=5)
-    async def update_cdn_sharing_links() -> None:
-        pass
+    @repeat_every(seconds=7)
+    async def update_cdn_sharing_links(
+        update_function = Depends(update_sharing_links_function)
+    ) -> None:
+        logging.info("Updating sharing links revorked")
 
     app.include_router(api_router, prefix="/api")
 

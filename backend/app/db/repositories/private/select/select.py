@@ -229,7 +229,7 @@ class PrivateDBSelectRepository(BaseDBRepository):
         """
         records = await self.__select_many(query=select_all_material_part_keys_query(presentation=presentation, media_type=media_type))
 
-        response = [MaterialAllModel(**record) for record in records] 
+        response = [AudioImagesAllModel(**record) for record in records] 
         return response      
 
     async def __select_many(self, *, query):
