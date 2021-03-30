@@ -4,6 +4,21 @@ from app.db.repositories.private.update.queries import *
 
 from app.db.repositories.base import BaseDBRepository
 
+# import update models
+from app.models.private import UpdateStructureModel
+from app.models.private import UpdateLectureModel
+from app.models.private import UpdateVideoModel
+from app.models.private import UpdateGameModel
+
+# import response models
+from app.models.private import GradeInDB
+from app.models.private import SubjectInDB
+from app.models.private import BranchInDB
+from app.models.private import LectureInDB
+from app.models.private import VideoInDB
+from app.models.private import GameInDB
+
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -67,6 +82,80 @@ class PrivateDBUpdateRepository(BaseDBRepository):
         await self.__update(query=update_presentation_part_links_query(keys=keys, links=links, presentation=presentation, media_type=media_type))
 
 
+
+    # ###
+    # Update data
+    # ###
+
+    async def update_grade(self, *, updated: UpdateStructureModel, background_url: str = None) -> GradeInDB:
+        """
+        Accepts updated - updated model for structure
+        background_url - if background_key is updated, background url is to be passed
+        else leave it None
+        """
+        response = await self.__update(query=update_grade_query(id=updated.id, name_ru=updated.name_ru, background_url=background_url, background_key=updated.background_key))
+        if not response:
+            raise HTTPException(status_code=404, detail=f"Grade not updated, nothing found for give id {updated.id}")
+        return GradeInDB(**response)
+
+
+    async def update_subject(self, *, updated: UpdateStructureModel, background_url: str = None) -> SubjectInDB:
+        """
+        Accepts updated - updated model for structure
+        background_url - if background_key is updated, background url is to be passed
+        else leave it None
+        """
+        response = await self.__update(query=update_subject_query(id=updated.id, name_ru=updated.name_ru, background_url=background_url, background_key=updated.background_key))
+        if not response:
+            raise HTTPException(status_code=404, detail=f"Subject not updated, nothing found for give id {updated.id}")
+        return SubjectInDB(**response)
+
+
+    async def update_branch(self, *, updated: UpdateStructureModel, background_url: str = None) -> BranchInDB:
+        """
+        Accepts updated - updated model for structure
+        background_url - if background_key is updated, background url is to be passed
+        else leave it None
+        """
+        response = await self.__update(query=update_branch_query(id=updated.id, name_ru=updated.name_ru, background_url=background_url, background_key=updated.background_key))
+        if not response:
+            raise HTTPException(status_code=404, detail=f"Branch not updated, nothing found for give id {updated.id}")
+        return BranchInDB(**response)
+
+
+    async def update_lecture(self, *, updated: UpdateLectureModel, background_url: str = None) -> LectureInDB:
+        """
+        Accepts updated - updated model for lecture
+        background_url - if background_key is updated, background url is to be passed
+        else leave it None
+        """
+        response = await self.__update(query=update_lecture_query(id=updated.id, name_ru=updated.name_ru, description=updated.description, background_url=background_url, background_key=updated.background_key))
+        if not response:
+            raise HTTPException(status_code=404, detail=f"Lecture not updated, nothing found for give id {updated.id}")
+        return LectureInDB(**response)
+
+
+
+    async def update_video(self, *, updated: UpdateVideoModel) -> VideoInDB:
+        """
+        Accepts updated - updated model for video
+        """
+        response = await self.__update(query=update_video_query(id=updated.id, name_ru=updated.name_ru, description=updated.description, url=updated.url))
+        if not response:
+            raise HTTPException(status_code=404, detail=f"Video not updated, nothing found for give id {updated.id}")
+        return VideoInDB(**response)
+
+    
+    async def update_game(self, *, updated: UpdateGameModel) -> GameInDB:
+        """
+        Accepts updated - updated model for video
+        """
+        response = await self.__update(query=update_game_query(id=updated.id, name_ru=updated.name_ru, description=updated.description, url=updated.url))
+        if not response:
+            raise HTTPException(status_code=404, detail=f"Game not updated, nothing found for give id {updated.id}")
+        return GameInDB(**response)
+
+    
     async def __update(self, *, query) -> None:
         try:
             updated = await self.db.fetch_one(query=query)

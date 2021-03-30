@@ -29,13 +29,13 @@ def get_application():
 
     # update sharing links every CDN_LIFESPAN - 1 day
     # TODO figure out why this doesn't work and fix
-    @app.on_event("startup")
+    '''@app.on_event("startup")
     @repeat_every(seconds=7)
     async def update_cdn_sharing_links(
         update_function = Depends(update_sharing_links_function)
     ) -> None:
         logging.info("Updating sharing links revorked")
-
+    '''
     app.include_router(api_router, prefix="/api")
 
     return app

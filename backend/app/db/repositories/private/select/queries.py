@@ -81,7 +81,7 @@ def select_all_material_keys_query(table) -> str:
 # material parts
 def select_material_parts(fk, presentation, media_type) -> str:
     return \
-        f"SELECT (private.select_all_{presentation}_{media_type}({fk})).*"
+        f"SELECT (private.select_{presentation}_{media_type}({fk})).*"
 
 def select_all_material_part_keys_query(presentation, media_type) -> str:
     return \

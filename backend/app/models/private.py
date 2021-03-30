@@ -255,3 +255,25 @@ class MaterialAllModel(DBCoreModel):
 class AudioImagesAllModel(DBCoreModel):
     order: int
     key: str
+
+
+# Update models
+
+class UpdateBaseModel(DBCoreModel):
+    id: int
+    name_ru: Optional[str]
+
+class UpdateVideoModel(UpdateBaseModel):
+    description: Optional[str]
+    url: Optional[str]
+
+class UpdateGameModel(UpdateBaseModel):
+    description: Optional[str]
+    url: Optional[str]
+
+class UpdateLectureModel(UpdateBaseModel):
+    description: Optional[str]
+    background_key: Optional[str]
+
+class UpdateStructureModel(UpdateBaseModel):
+    background_key: Optional[str]

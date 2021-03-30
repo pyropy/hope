@@ -21,11 +21,11 @@ def create_stored_procedures_update() -> None:
         AS $$
         BEGIN
         UPDATE private.grade SET 
-        private.grade.name_ru = COALESCE($2, private.grade.name_ru),
-        private.grade.background = COALESCE($3, private.grade.background),
-        private.grade.background_key = COALESCE($4, private.grade.background_key)
+        name_ru = COALESCE($2, private.grade.name_ru),
+        background = COALESCE($3, private.grade.background),
+        background_key = COALESCE($4, private.grade.background_key)
         WHERE private.grade.id = $1;
-        RETURN QUERY (SELECT * FROM private.grade WHERE id = $1);
+        RETURN QUERY (SELECT * FROM private.grade WHERE private.grade.id = $1);
         END $$ LANGUAGE plpgsql;
     """)
 
@@ -45,6 +45,20 @@ def create_stored_procedures_update() -> None:
 
     # subject
     op.execute("""
+    CREATE OR REPLACE FUNCTION private.update_subject(int, varchar(20), text, text)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        UPDATE private.subject SET 
+        name_ru = COALESCE($2, private.subject.name_ru),
+        background = COALESCE($3, private.subject.background),
+        background_key = COALESCE($4, private.subject.background_key)
+        WHERE private.subject.id = $1;
+        RETURN QUERY (SELECT * FROM private.subject WHERE private.subject.id = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    op.execute("""
     CREATE OR REPLACE FUNCTION private.update_subject_links(text[], text[])
         RETURNS VOID
         AS $$
@@ -59,6 +73,20 @@ def create_stored_procedures_update() -> None:
     """)
     # branch
     op.execute("""
+    CREATE OR REPLACE FUNCTION private.update_branch(int, varchar(20), text, text)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), background text, background_key text)
+        AS $$
+        BEGIN
+        UPDATE private.branch SET 
+        name_ru = COALESCE($2, private.branch.name_ru),
+        background = COALESCE($3, private.branch.background),
+        background_key = COALESCE($4, private.branch.background_key)
+        WHERE private.branch.id = $1;
+        RETURN QUERY (SELECT * FROM private.branch WHERE private.branch.id = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    op.execute("""
     CREATE OR REPLACE FUNCTION private.update_branch_links(text[], text[])
         RETURNS VOID
         AS $$
@@ -72,6 +100,21 @@ def create_stored_procedures_update() -> None:
         END $$ LANGUAGE plpgsql;
     """)
     # lecture
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.update_lecture(int, varchar(20), text, text, text)
+        RETURNS TABLE (id int, fk int, name_en varchar(20), name_ru varchar(20), description text, background text, background_key text)
+        AS $$
+        BEGIN
+        UPDATE private.lecture SET 
+        name_ru = COALESCE($2, private.lecture.name_ru),
+        description = COALESCE($3, private.lecture.description),
+        background = COALESCE($4, private.lecture.background),
+        background_key = COALESCE($5, private.lecture.background_key)
+        WHERE private.lecture.id = $1;
+        RETURN QUERY (SELECT * FROM private.lecture WHERE private.lecture.id = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
     op.execute("""
     CREATE OR REPLACE FUNCTION private.update_lecture_links(text[], text[])
         RETURNS VOID
@@ -146,17 +189,52 @@ def create_stored_procedures_update() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
+    # video
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.update_video(int, varchar(20), text, text)
+        RETURNS TABLE (id int, url text, name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        UPDATE private.video SET 
+        name_ru = COALESCE($2, private.video.name_ru),
+        description = COALESCE($3, private.video.description),
+        url = COALESCE($4, private.video.url)
+        WHERE private.video.fk = $1;
+        RETURN QUERY (SELECT * FROM private.video WHERE private.video.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # game
+    op.execute("""
+    CREATE OR REPLACE FUNCTION private.update_game(int, varchar(20), text, text)
+        RETURNS TABLE (id int, url text, name_ru varchar(20), description text)
+        AS $$
+        BEGIN
+        UPDATE private.game SET 
+        name_ru = COALESCE($2, private.game.name_ru),
+        description = COALESCE($3, private.game.description),
+        url = COALESCE($4, private.game.url)
+        WHERE private.game.fk = $1;
+        RETURN QUERY (SELECT * FROM private.game WHERE private.game.fk = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+
 def drop_stored_procedures() -> None:
     procedures = [
         'update_grade',
         'update_grade_links',
+        'update_subject',
         'update_subject_links',
+        'update_branch',
         'update_branch_links',
+        'update_lecture',
         'update_lecture_links',
         'update_practice_image_links',
         'update_practice_audio_links',
         'update_theory_image_links',
         'update_theory_audio_links',
+        'update_video',
+        'update_game',
     ]
 
     for procedure in procedures:

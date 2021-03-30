@@ -1,5 +1,4 @@
-def update_grades_query() -> str:
-    pass
+# Update links (auto update)
 
 def update_grade_links_query(keys, links) -> str:
     keys = list_to_string(keys)
@@ -44,3 +43,38 @@ def list_to_string(list_) -> str:
     list_ = str(list_).replace(']','')
     list_ = str(list_).replace("'",'')
     return list_
+
+
+# Update data
+def update_grade_query(id, name_ru, background_url, background_key) -> str:
+    return \
+        f"SELECT (private.update_grade({id}{string_or_null(name_ru, background_url, background_key)})).*"
+
+def update_subject_query(id, name_ru, background_url, background_key) -> str:
+    return \
+        f"SELECT (private.update_subject({id}{string_or_null(name_ru, background_url, background_key)})).*"
+
+def update_branch_query(id, name_ru,  background_url, background_key) -> str:
+    return \
+        f"SELECT (private.update_branch({id}{string_or_null(name_ru, background_url, background_key)})).*"
+
+def update_lecture_query(id, name_ru, description, background_url, background_key) -> str:
+    return \
+        f"SELECT (private.update_lecture({id}{string_or_null(name_ru, description, background_url, background_key)})).*"
+
+def update_video_query(id, name_ru, description, url) -> str:
+    return \
+        f"SELECT (private.update_video({id}{string_or_null(name_ru, description, url)})).*"
+
+def update_game_query(id, name_ru, description, url) -> str:
+    return \
+        f"SELECT (private.update_game({id}{string_or_null(name_ru, description, url)})).*"
+
+def string_or_null(*args) -> str:
+    string = ''
+    for arg in args:
+        if arg == None or arg == '':
+            string += ', null'
+        else:
+            string += f", '{arg}'"
+    return string
