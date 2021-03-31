@@ -123,3 +123,24 @@ class InstructionPostModel(InstructionCoreModel):
 
 class InstructionInDB(InstructionCoreModel):
     pass
+
+# material response
+class MaterialResponseModel(DBCoreModel):
+    video: Optional[VideoInDB]
+    game: Optional[GameInDB]
+    book: Optional[BookInDB]
+    practice: Optional[PresentationInDB]
+    theory: Optional[PresentationInDB]
+
+class MaterialResponse(DBCoreModel):
+    material: MaterialResponseModel
+
+
+class AboutUsAllResponse(DBCoreModel):
+    about_us: List[AboutUsInDB]
+
+class FaqAllResponse(DBCoreModel):
+    faq: List[FAQInDB]
+
+class InstructionAllResponse(DBCoreModel):
+    instructions: List[InstructionInDB]

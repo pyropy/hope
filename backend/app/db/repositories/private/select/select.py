@@ -216,7 +216,7 @@ class PrivateDBSelectRepository(BaseDBRepository):
         return response       
 
     async def select_presentation_parts(self, *, fk, presentation, media_type) -> List[PresentationMediaInDB]:
-        medium = await self.__select_many(query=select_material_parts(fk=fk, presentation=presentation, media_type=media_type))
+        medium = await self.__select_many(query=select_material_parts_query(fk=fk, presentation=presentation, media_type=media_type))
         if not medium:
             return []
 

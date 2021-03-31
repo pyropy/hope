@@ -79,7 +79,7 @@ def select_all_material_keys_query(table) -> str:
         f"SELECT (private.select_all_{table}_keys()).*"
 
 # material parts
-def select_material_parts(fk, presentation, media_type) -> str:
+def select_material_parts_query(fk, presentation, media_type) -> str:
     return \
         f"SELECT (private.select_{presentation}_{media_type}({fk})).*"
 

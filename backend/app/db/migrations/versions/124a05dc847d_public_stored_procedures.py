@@ -159,7 +159,121 @@ def create_insert_public_procedures() -> None:
     """)
 
 def create_select_public_procedures() -> None:
-    pass
+      # video
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_video()
+        RETURNS TABLE (url text, name_ru varchar(20), description text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.video.url, public.video.name_ru, public.video.description FROM public.video);
+        END $$ LANGUAGE plpgsql;
+    """)
+    
+    # book
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_book()
+        RETURNS TABLE (url text, name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.book.url, public.book.name_ru, public.book.description, public.book.key FROM public.book);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # game
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_game()
+        RETURNS TABLE (url text, name_ru varchar(20), description text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.game.url, public.game.name_ru, public.game.description FROM public.game);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # theory
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_theory()
+        RETURNS TABLE (name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.theory.name_ru, public.theory.description, public.theory.key FROM public.theory);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # thoery images
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_theory_image()
+        RETURNS TABLE (url text, "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.theory_image.url, public.theory_image."order", public.theory_image.key FROM public.theory_image);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # theory audio
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_theory_audio()
+        RETURNS TABLE (url text, "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.theory_audio.url, public.theory_audio."order", public.theory_audio.key FROM public.theory_audio);
+        END $$ LANGUAGE plpgsql;
+    """)
+    
+    # practice
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_practice()
+        RETURNS TABLE (name_ru varchar(20), description text, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.practice.name_ru, public.practice.description, public.practice.key FROM public.practice);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # practice images
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_practice_image()
+        RETURNS TABLE (url text, "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.practice_image.url, public.practice_image."order", public.practice_image.key FROM public.practice_image);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # practice audio
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_practice_audio()
+        RETURNS TABLE (url text, "order" int, key text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.practice_audio.url, public.practice_audio."order", public.practice_audio.key FROM public.practice_audio);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+    # AboutUs, Instruction, FAQ
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_about_us()
+        RETURNS TABLE ("order" int, title text, description text, svg text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.about_us.order, public.about_us.title, public.about_us.description, public.about_us.svg FROM public.about_us);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # instruction
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_instruction()
+        RETURNS TABLE ("order" int, title text, description text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.instruction.order, public.instruction.title, public.instruction.description FROM public.instruction);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # faq
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.select_faq(int, int)
+        RETURNS TABLE (id int, question text, answer text)
+        AS $$
+        BEGIN
+        RETURN QUERY (SELECT public.faq.id, public.faq.question, public.faq.answer FROM public.faq WHERE public.faq.id > $1 LIMIT $2);
+        END $$ LANGUAGE plpgsql;
+    """)
+
+
 
 def create_update_public_procedures() -> None:
     pass
@@ -182,6 +296,18 @@ def drop_public_procedures() -> None:
         'insert_about_us',
         'insert_faq',
         'insert_instruction',
+        'select_video',
+        'select_book',
+        'select_game',
+        'select_theory',
+        'select_theory_image',
+        'select_theory_audio',
+        'select_practice',
+        'select_practice_image',
+        'select_practice_audio',
+        'select_faq',
+        'select_instruction',
+        'select_about_us',
     ]
 
     for proc in procedures:
