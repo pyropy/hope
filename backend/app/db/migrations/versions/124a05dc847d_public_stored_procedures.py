@@ -276,10 +276,163 @@ def create_select_public_procedures() -> None:
 
 
 def create_update_public_procedures() -> None:
-    pass
+    # video
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_video(varchar(100), text, text)
+        RETURNS TABLE (name_ru varchar(100), url text, description text)
+        AS $$
+        BEGIN
+        UPDATE public.video SET
+            name_ru = COALESCE($1, public.video.name_ru),
+            url = COALESCE($2, public.video.url),
+            description = COALESCE($3, public.video.description);
+        RETURN QUERY (SELECT * FROM public.video);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # game
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_game(varchar(100), text, text)
+        RETURNS TABLE (name_ru varchar(100), url text, description text)
+        AS $$
+        BEGIN
+        UPDATE public.game SET
+            name_ru = COALESCE($1, public.game.name_ru),
+            url = COALESCE($2, public.game.url),
+            description = COALESCE($3, public.game.description);
+        RETURN QUERY (SELECT * FROM public.game);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # about_us
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_about_us(int, text, text, text)
+        RETURNS TABLE ("order" int, title text, description text, svg text)
+        AS $$
+        BEGIN
+        UPDATE public.about_us SET
+            title = COALESCE($2, public.about_us.title),
+            description = COALESCE($3, public.about_us.description),
+            svg = COALESCE($4, public.about_us.svg)
+        WHERE public.about_us.order = $1; 
+        RETURN QUERY (SELECT public.about_us.order, public.about_us.title, public.about_us.description, public.about_us.svg FROM public.about_us WHERE public.about_us.order = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # instruction
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_instruction(int, text, text)
+        RETURNS TABLE ("order" int, title text, description text)
+        AS $$
+        BEGIN
+        UPDATE public.instruction SET
+            title = COALESCE($2, public.instruction.title),
+            description = COALESCE($3, public.instruction.description)
+        WHERE public.instruction.order = $1; 
+        RETURN QUERY (SELECT public.instruction.order, public.instruction.title, public.instruction.description FROM public.instruction WHERE public.instruction.order = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    # faq
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_faq(int, text, text)
+        RETURNS TABLE (id int, question text, answer text)
+        AS $$
+        BEGIN
+        UPDATE public.instruction SET
+            question = COALESCE($2, public.faq.question),
+            answer = COALESCE($3, public.faq.answer)
+        WHERE public.faq.id = $1; 
+        RETURN QUERY (SELECT public.faq.id, public.faq.question, public.faq.answer FROM public.faq WHERE public.faq.id = $1);
+        END $$ LANGUAGE plpgsql;
+    """)
+    
 
 def create_delete_public_procedures() -> None:
-    pass
+    # video
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_video()
+        RETURNS VOID
+        AS $$
+        BEGIN 
+        DELETE FROM public.video;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # game
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_game()
+        RETURNS VOID
+        AS $$
+        BEGIN 
+        DELETE FROM public.game;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # book
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_book()
+        RETURNS text
+        AS $$
+        DECLARE
+            key text;
+        BEGIN 
+        DELETE FROM public.book RETURNING public.book.key INTO key;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # theory
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_theory()
+        RETURNS text
+        AS $$
+        DECLARE 
+            key text;
+        BEGIN
+        DELETE FROM public.theory RETURNING public.theory.key INTO key;
+        DELETE FROM public.theory_image;
+        DELETE FROM public.theory_audio;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # practice
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_practice()
+        RETURNS text
+        AS $$
+        DECLARE
+            key text;
+        BEGIN 
+        DELETE FROM public.practice RETURNING public.practice.key INTO key;
+        DELETE FROM public.practice_image;
+        DELETE FROM public.practice_audio;
+        RETURN key;
+        END $$ LANGUAGE plpgsql;
+    """)
+    
+    # about us
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_about_us(int)
+        RETURNS VOID
+        AS $$
+        BEGIN 
+        DELETE FROM public.about_us WHERE public.about_us.order = $1;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # faq
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_faq(int)
+        RETURNS VOID
+        AS $$
+        BEGIN 
+        DELETE FROM public.faq WHERE public.faq.id = $1;
+        END $$ LANGUAGE plpgsql;
+    """)
+    # instruction
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.delete_instruction(int)
+        RETURNS VOID
+        AS $$
+        BEGIN 
+        DELETE FROM public.instruction WHERE public.instruction.order = $1;
+        END $$ LANGUAGE plpgsql;
+    """)
+    
+
 
 
 def drop_public_procedures() -> None:
@@ -308,6 +461,19 @@ def drop_public_procedures() -> None:
         'select_faq',
         'select_instruction',
         'select_about_us',
+        'update_video',
+        'update_game',
+        'update_about_us',
+        'update_faq',
+        'update_instruction',
+        'delete_video',
+        'delete_book',
+        'delete_game',
+        'delete_theory',
+        'delete_practice',
+        'delete_about_us',
+        'delete_faq',
+        'delete_instruction'
     ]
 
     for proc in procedures:

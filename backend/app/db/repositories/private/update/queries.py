@@ -1,3 +1,5 @@
+from app.db.repositories.parsers import string_or_null
+
 # Update links (auto update)
 
 def update_grade_links_query(keys, links) -> str:
@@ -69,12 +71,3 @@ def update_video_query(id, name_ru, description, url) -> str:
 def update_game_query(id, name_ru, description, url) -> str:
     return \
         f"SELECT (private.update_game({id}{string_or_null(name_ru, description, url)})).*"
-
-def string_or_null(*args) -> str:
-    string = ''
-    for arg in args:
-        if arg == None or arg == '':
-            string += ', null'
-        else:
-            string += f", '{arg}'"
-    return string

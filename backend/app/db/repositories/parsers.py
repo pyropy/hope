@@ -10,3 +10,19 @@ def parse_youtube_link(link) -> str:
     except:
         raise HTTPException(status_code=400, detail="Error trying to parse youtube link. Please refer to documentation to find out how to get and post valid youtube link.")
     return link
+
+
+def string_or_null(*args) -> str:
+    '''
+    Accept any number of STRING args
+    Returns formated string where empty string args, or string args = None
+    are replaced with null
+    '''
+    string = ''
+    for arg in args:
+        if arg == None or arg == '':
+            string += 'null, '
+        else:
+            string += f"'{arg}', "
+
+    return string.strip(', ')

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from fastapi import Depends, Body
+from fastapi import Depends
 from starlette.status import HTTP_200_OK
 
 from app.db.repositories.public.public import PublicDBRepository

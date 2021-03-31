@@ -144,3 +144,32 @@ class FaqAllResponse(DBCoreModel):
 
 class InstructionAllResponse(DBCoreModel):
     instructions: List[InstructionInDB]
+
+
+# update models
+class UpdateVideoModel(DBCoreModel):
+    name_ru: Optional[str]
+    url: Optional[str]
+    description: Optional[str]
+
+class UpdateGameModel(DBCoreModel):
+    name_ru: Optional[str]
+    url: Optional[str]
+    description: Optional[str]
+
+class UpdateAboutUsModel(DBCoreModel):
+    order: int
+    title: Optional[str]
+    description: Optional[str]
+    svg: Optional[str]
+
+class UpdateFAQModel(DBCoreModel):
+    id: int
+    question: Optional[str]
+    answer: Optional[str]
+
+class UpdateInstructionModel(DBCoreModel):
+    order: int
+    title: Optional[str]
+    description: Optional[str]
+    
