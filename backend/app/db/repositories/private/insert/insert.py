@@ -8,7 +8,7 @@ from asyncpg.exceptions import ForeignKeyViolationError
 from fastapi import HTTPException
 
 # parsers
-from app.db.repositories.private.parsers import parse_youtube_link
+from app.db.repositories.parsers import parse_youtube_link
 
 # ###
 # create models
@@ -91,7 +91,6 @@ class PrivateDBInsertRepository(BaseDBRepository):
         try:
             inserted_presentation = await self.db.fetch_one(query=query)
             inserted_images = await self.db.fetch_all(query=images_query)
-            print(images_query)
 
             if audio:
                 inserted_audio = await self.db.fetch_all(query=audio_query) 

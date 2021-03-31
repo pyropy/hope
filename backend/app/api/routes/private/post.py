@@ -2,8 +2,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi import Depends, Body
 from starlette.status import HTTP_201_CREATED
 
-from boto3 import Session
-
 from app.db.repositories.private.private import PrivateDBRepository
 from app.cdn.repositories.private.private import PrivateYandexCDNRepository
 
@@ -88,7 +86,6 @@ async def create_private_book(
 async def create_private_video(
     video: VideoPostModelYT = Body(...),
     db_repo: PrivateDBRepository = Depends(get_db_repository(PrivateDBRepository)),
-    cdn_repo: PrivateYandexCDNRepository = Depends(get_cdn_repository(PrivateYandexCDNRepository)),
     ) -> VideoInDB:
 
     video = VideoCreateModel(fk=video.fk, url=video.url, name_ru=video.name_ru, description=video.description, key=None)

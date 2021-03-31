@@ -1,6 +1,5 @@
 from typing import List, Optional
 from app.models.core import DBCoreModel
-from pydantic import validator
 
 
 # ###

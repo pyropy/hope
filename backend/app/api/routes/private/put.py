@@ -3,7 +3,7 @@ from starlette.status import HTTP_200_OK
 
 from app.db.repositories.private.private import PrivateDBRepository
 from app.cdn.repositories.private.private import PrivateYandexCDNRepository
-from app.db.repositories.private.parsers import parse_youtube_link
+from app.db.repositories.parsers import parse_youtube_link
 
 from app.api.dependencies.database import get_db_repository
 from app.api.dependencies.cdn import get_cdn_repository
