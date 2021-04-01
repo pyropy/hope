@@ -92,8 +92,8 @@ class PublicDBSelectRepository(BaseDBRepository):
 
     async def __select_presentation(self, *, presentation) -> PresentationInDB:
         master = await self.__select_one(query=select_material_query(table=presentation), raise_404=False)
-        images = await self.select_presentation_parts(presentation=presentation, media_type='image')
-        audio = await self.select_presentation_parts(presentation=presentation, media_type='audio')
+        images = await self.__select_presentation_parts(presentation=presentation, media_type='image')
+        audio = await self.__select_presentation_parts(presentation=presentation, media_type='audio')
         if not master:
             return None
         return PresentationInDB(

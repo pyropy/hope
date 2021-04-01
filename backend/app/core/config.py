@@ -8,6 +8,10 @@ PROJECT_NAME = "hope"
 VERSION = "1.0.0"
 API_PREFIX = "/api"
 
+# EMAIL
+SERVER_EMAIL = config("SERVER_EMAIL", cast=str,  default="vladoplavsicvladoplavsic@gmail.com")
+ADMIN_EMAIL = config("ADMIN_EMAIL", cast=str, default='johnyglup98@gmail.com')
+
 # CDN CREDS
 AWS_SECRET_KEY_ID = config("AWS_SECRET_KEY_ID", cast=str)
 AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", cast=str)

@@ -10,6 +10,8 @@ from app.api.routes.public.post import router as public_post_router
 from app.api.routes.public.get import router as public_get_router
 from app.api.routes.public.put import router as public_put_router
 from app.api.routes.public.delete import router as public_delete_router
+# user routes
+from app.api.routes.users.post import router as users_post_router
 
 router = APIRouter()
 
@@ -24,3 +26,6 @@ router.include_router(public_post_router, prefix='/public', tags=["public"])
 router.include_router(public_get_router, prefix='/public', tags=["public"])
 router.include_router(public_put_router, prefix='/public', tags=["public"])
 router.include_router(public_delete_router, prefix='/public', tags=["public"])
+
+# users routes
+router.include_router(users_post_router, prefix='/users', tags=['users'])
