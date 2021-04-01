@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from app.cdn.repositories.base import BaseCDNRepository
 
 from app.models.public import PresentationMediaCreate
