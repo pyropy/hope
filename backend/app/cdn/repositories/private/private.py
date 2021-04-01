@@ -96,8 +96,34 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
             raise HTTPException(status_code=404, detail="Background key error. Check your post data, and cdn! We didn't find any data in cdn for a given key")
 
 
+    def create_key_list_from_lists_of_objects(
+        self, 
+        *,
+        grades: List[StructureAllModel],
+        subjects: List[StructureAllModel],
+        branches: List[StructureAllModel],
+        lectures: List[StructureAllModel],
+        books: List[MaterialAllModel],
+        theory_images: List[AudioImagesAllModel],
+        theory_audio: List[AudioImagesAllModel],
+        practice_images: List[AudioImagesAllModel],
+        practice_audio: List[AudioImagesAllModel],
+        ) -> None:
 
+        keys = {}
+        keys["grades"] = structure_keys_from_list_of_objects(grades)
+        keys["subjects"] = structure_keys_from_list_of_objects(subjects)
+        keys["branches"] = structure_keys_from_list_of_objects(branches)
+        keys["lectures"] = structure_keys_from_list_of_objects(lectures)
 
+        keys['books'] = material_keys_from_list_of_objects(books)
+
+        keys["theory_images"] = audio_images_keys_from_list_of_objects(theory_images)
+        keys["theory_audio"] = audio_images_keys_from_list_of_objects(theory_audio)
+        keys["practice_images"] = audio_images_keys_from_list_of_objects(practice_images)
+        keys["practice_audio" ] = audio_images_keys_from_list_of_objects(practice_audio)
+
+        return keys
 
 
 
@@ -143,32 +169,3 @@ class PrivateYandexCDNRepository(BaseCDNRepository):
         # TODO: filter out folders
 
         return (checked, extra_list)
-
-    def create_key_list_from_lists_of_objects(
-        self, 
-        *,
-        grades: List[StructureAllModel],
-        subjects: List[StructureAllModel],
-        branches: List[StructureAllModel],
-        lectures: List[StructureAllModel],
-        books: List[MaterialAllModel],
-        theory_images: List[AudioImagesAllModel],
-        theory_audio: List[AudioImagesAllModel],
-        practice_images: List[AudioImagesAllModel],
-        practice_audio: List[AudioImagesAllModel],
-        ) -> None:
-
-        keys = {}
-        keys["grades"] = structure_keys_from_list_of_objects(grades)
-        keys["subjects"] = structure_keys_from_list_of_objects(subjects)
-        keys["branches"] = structure_keys_from_list_of_objects(branches)
-        keys["lectures"] = structure_keys_from_list_of_objects(lectures)
-
-        keys['books'] = material_keys_from_list_of_objects(books)
-
-        keys["theory_images"] = audio_images_keys_from_list_of_objects(theory_images)
-        keys["theory_audio"] = audio_images_keys_from_list_of_objects(theory_audio)
-        keys["practice_images"] = audio_images_keys_from_list_of_objects(practice_images)
-        keys["practice_audio" ] = audio_images_keys_from_list_of_objects(practice_audio)
-
-        return keys

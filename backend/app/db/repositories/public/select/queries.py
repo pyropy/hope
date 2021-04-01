@@ -20,3 +20,13 @@ def select_faq_query(offset=0, limit=None) -> str:
         limit = 'null'
     return \
         f"SELECT (public.select_faq({offset}, {limit})).*"
+
+# keys for updating
+def select_all_material_keys_query(table) -> str:
+    return \
+        f"SELECT public.select_all_{table}_keys() AS key"
+
+def select_all_material_part_keys_query(presentation, media_type) -> str:
+    return \
+        f"SELECT (public.select_all_{presentation}_{media_type}_keys()).*"
+

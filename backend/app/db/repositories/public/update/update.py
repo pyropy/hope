@@ -1,3 +1,4 @@
+from typing import Union
 from fastapi import HTTPException
 
 from app.db.repositories.public.update.queries import *
@@ -59,6 +60,26 @@ class PublicDBUpdateRepository(BaseDBRepository):
             raise HTTPException(status_code=404, detail="Ooops! Didn't find anything to update in table Instruction")
 
         return InstructionInDB(**response)
+
+    # link updating functions
+    async def update_book_links(self, *, book) -> None:
+        """
+        Accepts dict with keys = 'background_key' and value = 'sharing link'
+        Updates table book by keys
+        """
+        keys = list(book.keys())
+        links = list(book.values())
+        await self.__update(query=update_book_links_query(keys=keys, links=links))
+
+    # presentation prats
+    async def update_presentation_part_links(self, *, prats, presentation: Union['thoery', 'practice'], media_type: Union['image', 'audio']) -> None:
+        """
+        Accepts dict with keys = 'background_key' and value = 'sharing link'
+        Updates table (theory | practice)_(image | audio) by keys
+        """
+        keys = list(prats.keys())
+        links = list(prats.values())
+        await self.__update(query=update_presentation_part_links_query(keys=keys, links=links, presentation=presentation, media_type=media_type))
 
 
     async def __update(self, query) -> None:

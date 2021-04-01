@@ -12,6 +12,16 @@ def parse_youtube_link(link) -> str:
     return link
 
 
+def list_to_string(list_) -> str:
+    """
+    Accepts list object, stringifys it and removes NOTE[]'NOTE symbols
+    """
+    list_ = str(list_).replace('[','')
+    list_ = str(list_).replace(']','')
+    list_ = str(list_).replace("'",'')
+    return list_
+
+
 def string_or_null(*args) -> str:
     '''
     Accept any number of STRING args

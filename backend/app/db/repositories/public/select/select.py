@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from fastapi import HTTPException
 
 from app.db.repositories.base import BaseDBRepository
@@ -15,6 +15,9 @@ from app.models.public import PresentationMediaInDB
 from app.models.public import AboutUsInDB
 from app.models.public import FAQInDB
 from app.models.public import InstructionInDB
+
+from app.models.public import MaterialAllModel
+from app.models.public import AudioImagesAllModel
 
 import logging
 
@@ -54,6 +57,25 @@ class PublicDBSelectRepository(BaseDBRepository):
         response = await self.__select_many(query=select_instruction_query())
         list_ = [InstructionInDB(**r) for r in response]
         return list_
+
+    async def select_all_books(self) -> List[MaterialAllModel]:
+        """
+        Returns list of id, keys for all books in database
+        """
+        records = await self.__select_many(query=select_all_material_keys_query(table='book'))
+
+        response = [MaterialAllModel(**record) for record in records] 
+        return response       
+        
+    async def select_all_presentation_parts(self, presentation: Union['theory', 'practice'], media_type: Union['image', 'audio']) -> List[AudioImagesAllModel]:
+        """
+        Returns list of order, keys for all presentation (theory | practice) parts (image | audio) in database
+        """
+        records = await self.__select_many(query=select_all_material_part_keys_query(presentation=presentation, media_type=media_type))
+
+        response = [AudioImagesAllModel(**record) for record in records] 
+        return response     
+
 
     async def __select_book(self) -> BookInDB:
         response = await self.__select_one(query=select_material_query(table='book'), raise_404=False)

@@ -485,123 +485,6 @@ def create_stored_procedures_select() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
-def create_stored_procedures_select_all_of_each_kind() -> None:
-    # grades
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_grade_keys()
-        RETURNS TABLE (id int, background_key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.grade.id, private.grade.background_key FROM private.grade);
-        END $$ LANGUAGE plpgsql;
-    """)
-
-    # subject select functions
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_subject_keys()
-        RETURNS TABLE (id int, background_key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.subject.id, private.subject.background_key FROM private.subject);
-        END $$ LANGUAGE plpgsql;
-    """)
-
-    # branch select functions
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_branch_keys()
-        RETURNS TABLE (id int, background_key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.branch.id, private.branch.background_key FROM private.branch);
-        END $$ LANGUAGE plpgsql;
-    """)
-
-    # lecture select function
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_lecture_keys()
-        RETURNS TABLE (id int,  background_key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.lecture.id, private.lecture.background_key FROM private.lecture);
-        END $$ LANGUAGE plpgsql;
-    """)
-
-    # theory
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_theory_keys()
-        RETURNS TABLE (id int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.theory.fk, private.theory.key FROM private.theory);
-        END $$ LANGUAGE plpgsql;
-    """)
-    # thoery images
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_theory_image_keys()
-        RETURNS TABLE ("order" int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.theory_image."order", private.theory_image.key FROM private.theory_image);
-        END $$ LANGUAGE plpgsql;
-    """)
-    # theory audio
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_theory_audio_keys()
-        RETURNS TABLE ("order" int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.theory_audio."order", private.theory_audio.key FROM private.theory_audio);
-        END $$ LANGUAGE plpgsql;
-    """)
-    
-    # practice
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_practice_keys()
-        RETURNS TABLE (id int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.practice.fk, private.practice.key FROM private.practice);
-        END $$ LANGUAGE plpgsql;
-    """)
-    # practice images
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_practice_image_keys()
-        RETURNS TABLE ("order" int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.practice_image."order", private.practice_image.key FROM private.practice_image);
-        END $$ LANGUAGE plpgsql;
-    """)
-    # practice audio
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_practice_audio_keys()
-        RETURNS TABLE ("order" int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.practice_audio."order", private.practice_audio.key FROM private.practice_audio);
-        END $$ LANGUAGE plpgsql;
-    """)
-
-    # video
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_video_keys()
-        RETURNS TABLE (id int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.video.fk, private.theory.key FROM private.video);
-        END $$ LANGUAGE plpgsql;
-    """)
-    
-    # book
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.select_all_book_keys()
-        RETURNS TABLE (id int, key text)
-        AS $$
-        BEGIN
-        RETURN QUERY (SELECT private.book.fk, private.book.key FROM private.book);
-        END $$ LANGUAGE plpgsql;
-    """)
-
 
 def drop_stored_procedures() -> None:
     procedure_list = [
@@ -650,15 +533,7 @@ def drop_stored_procedures() -> None:
     "delete_practice_by_id",
     "delete_subject_by_id",
     "delete_theory_by_id",
-    "delete_video_by_id",
-    "select_all_theory_keys",
-    "select_all_theory_image_keys",
-    "select_all_theory_audio_keys",
-    "select_all_practice_keys",
-    "select_all_practice_image_keys",
-    "select_all_practice_audio_keys",
-    "select_all_video_keys",
-    "select_all_book_keys",]
+    "delete_video_by_id",]
 
     for procedure in procedure_list:
         op.execute(f"DROP FUNCTION private.{procedure}")
@@ -878,7 +753,6 @@ def upgrade() -> None:
     create_stored_procedures_insert()
     create_stored_procedures_select()
     create_stored_procedures_delete()
-    create_stored_procedures_select_all_of_each_kind()
 
 def downgrade() -> None:
     drop_private_tables()

@@ -173,3 +173,10 @@ class UpdateInstructionModel(DBCoreModel):
     title: Optional[str]
     description: Optional[str]
     
+# select all models
+class MaterialAllModel(DBCoreModel):
+    key: str
+
+class AudioImagesAllModel(DBCoreModel):
+    order: int
+    key: str

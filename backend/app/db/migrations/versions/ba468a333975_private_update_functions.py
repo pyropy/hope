@@ -29,20 +29,6 @@ def create_stored_procedures_update() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_grade_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.grade SET
-            background = $2[index] 
-            WHERE background_key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
-
     # subject
     op.execute("""
     CREATE OR REPLACE FUNCTION private.update_subject(int, varchar(20), text, text)
@@ -58,19 +44,6 @@ def create_stored_procedures_update() -> None:
         END $$ LANGUAGE plpgsql;
     """)
 
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_subject_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.subject SET
-            background = $2[index] 
-            WHERE background_key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
     # branch
     op.execute("""
     CREATE OR REPLACE FUNCTION private.update_branch(int, varchar(20), text, text)
@@ -85,20 +58,7 @@ def create_stored_procedures_update() -> None:
         RETURN QUERY (SELECT * FROM private.branch WHERE private.branch.id = $1);
         END $$ LANGUAGE plpgsql;
     """)
-
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_branch_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.branch SET
-            background = $2[index] 
-            WHERE background_key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
+    
     # lecture
     op.execute("""
     CREATE OR REPLACE FUNCTION private.update_lecture(int, varchar(20), text, text, text)
@@ -112,80 +72,6 @@ def create_stored_procedures_update() -> None:
         background_key = COALESCE($5, private.lecture.background_key)
         WHERE private.lecture.id = $1;
         RETURN QUERY (SELECT * FROM private.lecture WHERE private.lecture.id = $1);
-        END $$ LANGUAGE plpgsql;
-    """)
-
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_lecture_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.lecture SET
-            background = $2[index] 
-            WHERE background_key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
-    # theory
-
-    # theory images
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_theory_image_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.theory_image SET
-            url = $2[index] 
-            WHERE key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
-    # theory audio
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_theory_audio_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.theory_audio SET
-            url = $2[index] 
-            WHERE key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
-    # practice
-
-    # practice images
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_practice_image_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.practice_image SET
-            url = $2[index] 
-            WHERE key = $1[index];
-        END LOOP;
-        END $$ LANGUAGE plpgsql;
-    """)
-    # practice audio
-    op.execute("""
-    CREATE OR REPLACE FUNCTION private.update_practice_audio_links(text[], text[])
-        RETURNS VOID
-        AS $$
-        BEGIN
-        FOR index IN 1 .. array_upper($1, 1)
-        LOOP
-            UPDATE private.practice_audio SET
-            url = $2[index] 
-            WHERE key = $1[index];
-        END LOOP;
         END $$ LANGUAGE plpgsql;
     """)
 
@@ -222,17 +108,9 @@ def create_stored_procedures_update() -> None:
 def drop_stored_procedures() -> None:
     procedures = [
         'update_grade',
-        'update_grade_links',
         'update_subject',
-        'update_subject_links',
         'update_branch',
-        'update_branch_links',
         'update_lecture',
-        'update_lecture_links',
-        'update_practice_image_links',
-        'update_practice_audio_links',
-        'update_theory_image_links',
-        'update_theory_audio_links',
         'update_video',
         'update_game',
     ]

@@ -1,3 +1,4 @@
+from typing import Union
 from fastapi import HTTPException
 
 from app.db.repositories.private.update.queries import *
@@ -72,7 +73,7 @@ class PrivateDBUpdateRepository(BaseDBRepository):
         await self.__update(query=update_book_links_query(keys=keys, links=links))
 
     # presentation prats
-    async def update_presentation_part_links(self, *, prats, presentation, media_type) -> None:
+    async def update_presentation_part_links(self, *, prats, presentation: Union['theory', 'practice'], media_type: Union['image', 'audio']) -> None:
         """
         Accepts dict with keys = 'background_key' and value = 'sharing link'
         Updates table (theory | practice)_(image | audio) by keys

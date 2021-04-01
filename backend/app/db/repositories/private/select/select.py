@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from app.db.repositories.base import BaseDBRepository
 from fastapi import HTTPException
 
@@ -223,9 +223,9 @@ class PrivateDBSelectRepository(BaseDBRepository):
         response = [PresentationMediaInDB(**r) for r in medium]
         return response
 
-    async def select_all_presentation_parts(self, presentation, media_type) -> List[AudioImagesAllModel]:
+    async def select_all_presentation_parts(self, presentation: Union['theory', 'practice'], media_type: Union['image', 'audio']) -> List[AudioImagesAllModel]:
         """
-        Returns list of order, keys for all presentation (theory | practice) parts (images | audio) in database
+        Returns list of order, keys for all presentation (theory | practice) parts (images| audio) in database
         """
         records = await self.__select_many(query=select_all_material_part_keys_query(presentation=presentation, media_type=media_type))
 
