@@ -6,6 +6,8 @@ from app.db.repositories.public.public import PublicDBRepository
 
 from app.api.dependencies.database import get_db_repository
 
+from app.db.repositories.parsers import parse_youtube_link
+
 # request models
 from app.models.public import UpdateVideoModel
 from app.models.public import UpdateGameModel
@@ -29,6 +31,8 @@ async def update_video(
     video: UpdateVideoModel = Body(...),
     db_repo: PublicDBRepository = Depends(get_db_repository(PublicDBRepository)),
     ) -> VideoInDB:
+    if video.url:
+        video.url = parse_youtube_link(link=video.url)
     response = await db_repo.update_video(updated=video)
 
     return response
