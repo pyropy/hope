@@ -78,3 +78,35 @@ def send_message(subject, message_text, to=ADMIN_EMAIL) -> EmailResponse:
     message = create_message(sender=SERVER_EMAIL, to=to, subject=subject, message_text=message_text)
 
     return send_message_int(service=service, user_id="me", message=message)
+
+
+def create_confirm_link(token: str) -> str:
+    # here should go url of our confirmation page
+    # that page should send confirm request to server
+    # if everything is good: 
+    #     server responds with 200 and AuthResponse(verified=True)
+    #     page displays all good
+    # elif there is something wrong with verification (e.g. user doesn't exist anymore):
+    #     server responds with coresponding error message
+    #     page displays something gone wrong
+    confirm_url = f"http://localhost:1337/api/users/confirm_email?token={token}"
+
+    return f"""
+    <div style="position: absolute; left: 50%; bottom: 50%; transform: translate(50%, 50%)">
+    <p><h1>Welcome! Thanks for signing up. Please follow this link to activate your account:<h1></p>
+    <p><a href="{confirm_url}"><button style="background: light-blue">Confirm</button></a></p>
+    <br>
+    <p>Cheers!</p>
+    </div>
+    """
+
+def create_confirm_code_msg(confirmation_code: int) -> str:
+
+    return f"""
+    <div style="position: absolute; left: 50%; bottom: 50%; transform: translate(50%, 50%)">
+    <p><h1>Welcome! Thanks for signing up. Please follow this link to activate your account:<h1></p>
+    <p>{confirmation_code}</p>
+    <br>
+    <p>Cheers!</p>
+    </div>
+    """

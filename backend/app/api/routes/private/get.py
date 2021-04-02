@@ -30,13 +30,21 @@ from app.models.private import GameInDB
 from app.models.private import MaterialResponse
 
 
+# security
+from app.api.dependencies.auth import get_user_from_token
+
 router = APIRouter()
 
 @router.get("/grade", response_model=GradeResponse, name="private:get-grades", status_code=HTTP_200_OK)
 async def get_private_grades(
+    token: str,
+    user = Depends(get_user_from_token),
     db_repo: PrivateDBRepository = Depends(get_db_repository(PrivateDBRepository)),
     ) -> GradeResponse:
 
+    ids = []
+    if not user.is_superuser:
+        ids.append(1)
     # we will accept token for validating user and available grade id's
     # available grade id's for a user will be returned to him when he logs in, same time as token
     # super user (admin) will skip process id validation
@@ -47,7 +55,9 @@ async def get_private_grades(
 
 @router.get("/subject", response_model=SubjectResponse, name="private:get-subjects", status_code=HTTP_200_OK)
 async def get_private_subjects(
+    token: str,
     grade_name_en: str,
+    user = Depends(get_user_from_token),
     db_repo: PrivateDBRepository = Depends(get_db_repository(PrivateDBRepository)),
     ) -> SubjectResponse:
     
