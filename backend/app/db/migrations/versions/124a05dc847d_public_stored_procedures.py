@@ -251,7 +251,7 @@ def create_select_public_procedures() -> None:
         RETURNS TABLE ("order" int, title text, description text, svg text)
         AS $$
         BEGIN
-        RETURN QUERY (SELECT public.about_us.order, public.about_us.title, public.about_us.description, public.about_us.svg FROM public.about_us);
+        RETURN QUERY (SELECT public.about_us.order, public.about_us.title, public.about_us.description, public.about_us.svg FROM public.about_us ORDER BY public.about_us.order);
         END $$ LANGUAGE plpgsql;
     """)
     # instruction
@@ -260,7 +260,7 @@ def create_select_public_procedures() -> None:
         RETURNS TABLE ("order" int, title text, description text)
         AS $$
         BEGIN
-        RETURN QUERY (SELECT public.instruction.order, public.instruction.title, public.instruction.description FROM public.instruction);
+        RETURN QUERY (SELECT public.instruction.order, public.instruction.title, public.instruction.description FROM public.instruction ORDER BY public.instruction.order);
         END $$ LANGUAGE plpgsql;
     """)
     # faq
@@ -335,7 +335,7 @@ def create_update_public_procedures() -> None:
         RETURNS TABLE (id int, question text, answer text)
         AS $$
         BEGIN
-        UPDATE public.instruction SET
+        UPDATE public.faq SET
             question = COALESCE($2, public.faq.question),
             answer = COALESCE($3, public.faq.answer)
         WHERE public.faq.id = $1; 
@@ -432,6 +432,62 @@ def create_delete_public_procedures() -> None:
         END $$ LANGUAGE plpgsql;
     """)
     
+def create_on_delete_triggers() -> None:
+    # update all order numbers to shift left after deleting about us and instruction
+
+    # updating about us order number function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_about_us_order_numbers_after_delete() RETURNS trigger
+    AS $$
+    DECLARE 
+        temprow RECORD;
+        order_num int;
+    BEGIN
+        order_num = OLD.order;
+        FOR temprow IN 
+                SELECT "order" FROM public.about_us WHERE public.about_us.order > OLD.order ORDER BY public.about_us.order
+            LOOP
+                UPDATE public.about_us SET
+                    "order" = order_num
+                WHERE "order" = temprow.order;
+                order_num = order_num + 1;
+            END LOOP;
+            RETURN NULL;
+    END $$ LANGUAGE plpgsql;
+    """)
+
+    op.execute("""
+    CREATE TRIGGER update_about_us_order_numbers_after_delete_trigger AFTER DELETE ON public.about_us 
+    FOR EACH ROW EXECUTE PROCEDURE public.update_about_us_order_numbers_after_delete();
+    """)
+
+    # updating instruction order number function
+    op.execute("""
+    CREATE OR REPLACE FUNCTION public.update_instruction_order_numbers_after_delete() RETURNS trigger
+    AS $$
+    DECLARE 
+        temprow RECORD;
+        order_num int;
+    BEGIN
+        order_num = OLD.order;
+        FOR temprow IN 
+                SELECT "order" FROM public.instruction WHERE public.instruction.order > OLD.order ORDER BY public.instruction.order
+            LOOP
+                UPDATE public.instruction SET
+                    "order" = order_num
+                WHERE "order" = temprow.order;
+                order_num = order_num + 1;
+            END LOOP;
+            RETURN NULL;
+    END $$ LANGUAGE plpgsql;
+    """)
+
+    op.execute("""
+    CREATE TRIGGER update_instruction_order_numbers_after_delete_trigger AFTER DELETE ON public.instruction 
+    FOR EACH ROW EXECUTE PROCEDURE public.update_instruction_order_numbers_after_delete();
+    """)
+
+
 
 
 
@@ -473,11 +529,22 @@ def drop_public_procedures() -> None:
         'delete_practice',
         'delete_about_us',
         'delete_faq',
-        'delete_instruction'
+        'delete_instruction',
+        'update_about_us_order_numbers_after_delete',
+        'update_instruction_order_numbers_after_delete',
     ]
 
     for proc in procedures:
         op.execute(f"DROP FUNCTION public.{proc}")
+
+def drop_triggers() -> None:
+    triggers = [
+        'update_about_us_order_numbers_after_delete_trigger ON public.about_us',
+        'update_instruction_order_numbers_after_delete_trigger ON public.instruction',
+    ]
+
+    for trigger in triggers:
+        op.execute(f"DROP TRIGGER {trigger}")
 
 
 def upgrade() -> None:
@@ -485,6 +552,8 @@ def upgrade() -> None:
     create_select_public_procedures()
     create_update_public_procedures()
     create_delete_public_procedures()
+    create_on_delete_triggers()
 
 def downgrade() -> None:
+    drop_triggers()
     drop_public_procedures()

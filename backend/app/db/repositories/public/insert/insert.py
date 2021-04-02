@@ -114,7 +114,7 @@ class PublicDBInsertRepository(BaseDBRepository):
         return FAQInDB(**response)
 
     async def insert_instruction(self, *, instruction: InstructionCreateModel) -> InstructionInDB:
-        response = await self.__insert(query=insert_instruction_query(order_num=instruction.order, title=instruction.title, description=instruction.title))
+        response = await self.__insert(query=insert_instruction_query(order_num=instruction.order, title=instruction.title, description=instruction.description))
         return InstructionInDB(**response)
 
     async def __insert(self, *, query) -> None:
