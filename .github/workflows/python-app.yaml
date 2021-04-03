@@ -23,13 +23,13 @@ jobs:
         
     - name: Build and Push image to Yandex
       env:
-        YANDEX_ID: ${{ deployment.YANDEX_ID }}
-        YANDEX_PUBLIC_KEY: ${{ deployment. YANDEX_PUBLIC_KEY }}
-        YANDEX_KEY_ALGORITHM: ${{ deployment.YANDEX_KEY_ALGORITHM }}
-        YANDEX_CREATED_AT: ${{ deployment.YANDEX_CREATED_AT }}
-        YANDEX_SERVICE_ACCOUNT_ID: ${{ deployment.YANDEX_SERVICE_ACCOUNT_ID }}
-        YANDEX_PRIVATE_KEY: ${{ deployment.YANDEX_PRIVATE_KEY }}
-        YANDEX_REGISTRY_URL: ${{ deployment.YANDEX_REGISTRY_URL }}
+        YANDEX_ID: ${{ secrets.YANDEX_ID }}
+        YANDEX_PUBLIC_KEY: ${{ secrets. YANDEX_PUBLIC_KEY }}
+        YANDEX_KEY_ALGORITHM: ${{ secrets.YANDEX_KEY_ALGORITHM }}
+        YANDEX_CREATED_AT: ${{ secrets.YANDEX_CREATED_AT }}
+        YANDEX_SERVICE_ACCOUNT_ID: ${{ secrets.YANDEX_SERVICE_ACCOUNT_ID }}
+        YANDEX_PRIVATE_KEY: ${{ secrets.YANDEX_PRIVATE_KEY }}
+        YANDEX_REGISTRY_URL: ${{ secrets.YANDEX_REGISTRY_URL }}
 
       run: |
         python .github/workflows/yandex/build.py
