@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build & Upload Image to Yandex Image Registry Action
-        uses: pyropy/yandex-cloud-image-registry@v0.4-alpha
+        uses: pyropy/yandex-cloud-image-registry@v0.6-alpha
         with:
           YC_SERVICE_ACCOUNT_KEY_FILE: ${{ secrets.YC_SERVICE_ACCOUNT_KEY_FILE }}
           YC_IMG_REGISTRY_ID: ${{ secrets.YC_IMG_REGISTRY_ID }}
