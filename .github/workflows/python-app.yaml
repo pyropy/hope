@@ -22,5 +22,14 @@ jobs:
         if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
         
     - name: Build and Push image to Yandex
+      env:
+        YANDEX_ID: ${{ deployment.YANDEX_ID }}
+        YANDEX_PUBLIC_KEY: ${{ deployment. YANDEX_PUBLIC_KEY }}
+        YANDEX_KEY_ALGORITHM: ${{ deployment.YANDEX_KEY_ALGORITHM }}
+        YANDEX_CREATED_AT: ${{ deployment.YANDEX_CREATED_AT }}
+        YANDEX_SERVICE_ACCOUNT_ID: ${{ deployment.YANDEX_SERVICE_ACCOUNT_ID }}
+        YANDEX_PRIVATE_KEY: ${{ deployment.YANDEX_PRIVATE_KEY }}
+        YANDEX_REGISTRY_URL: ${{ deployment.YANDEX_REGISTRY_URL }}
+
       run: |
         python .github/workflows/yandex/build.py
