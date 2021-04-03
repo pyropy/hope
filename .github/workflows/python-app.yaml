@@ -23,4 +23,4 @@ jobs:
         
     - name: Build and Push image to Yandex
       run: |
-        python .github/workflow/yandex/build.py
+        python .github/workflows/yandex/build.py
